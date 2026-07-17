@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="104">
+  <author>Earshot</author>
+  <version>0.31.8.0</version>
+  <title><en>Global Market Forces</en></title>
+  <description><en><![CDATA[
+Global Market Forces adds crop-focused long-term pricing influenced by global cycles, crop demand, crop supply, crop policy, world events, and market intelligence.
+  ]]></en></description>
+  <iconFilename>icon.dds</iconFilename>
+  <multiplayer supported="true" />
+      <extraSourceFiles>
+    <sourceFile filename="scripts/GlobalMarketForces.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesConfig.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesTrends.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesEvents.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesStationPriceEvent.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesIntelligence.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesPriceEngine.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesPersistence.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesGui.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesMenuFrame.lua" />
+  </extraSourceFiles>
+  <guiProfiles>gui/GlobalMarketForcesMenuProfiles.xml</guiProfiles>
+  <actions>
+    <action name="GMF_TOGGLE_REPORT" axisType="HALF" />
+  </actions>
+  <inputBinding>
+    <actionBinding action="GMF_TOGGLE_REPORT">
+      <binding device="KB_MOUSE_DEFAULT" input="KEY_lshift KEY_m" index="1" />
+    </actionBinding>
+  </inputBinding>
+  <l10n>
+    <text name="input_GMF_TOGGLE_REPORT">
+      <en>Global Market Forces: Toggle Market Report</en>
+    </text>
+  </l10n>
+</modDesc>

@@ -1,0 +1,13 @@
+# Packaged mod releases are built artifacts; publish them through GitHub Releases.
+*.zip
+
+# Farming Simulator runtime and test data.
+*.log
+globalMarketForces.xml
+savegame*/
+
+# Editor and operating-system files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

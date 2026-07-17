@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<GUI name="GlobalMarketForcesMenu">
+    <GuiElement profile="fs25_menuContainer">
+        <GuiElement profile="fs25_menuHeaderPanel">
+            <Bitmap profile="fs25_menuHeaderIconBg">
+                <Bitmap profile="gmfMenuIcon"/>
+            </Bitmap>
+            <Text profile="gmfMenuTitle" text="Market Report"/>
+        </GuiElement>
+        <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" position="0px -10px"/>
+        <GuiElement profile="fs25_statisticsHeaderBox" id="marketTableHeader" position="0px -88px">
+            <Text profile="gmfGlobalConditions" id="globalConditions" text="MARKET BRIEF: Loading..." position="20px 40px" size="1490px 64px" textWrapWidth="1490px" textMaxNumLines="3" textVerticalAlignment="top"/>
+            <Text profile="gmfMenuColumnHeader" position="20px 0px" size="360px 32px" text="Market"/>
+            <Text profile="gmfMenuColumnHeader" position="420px 0px" size="300px 32px" text="Outlook"/>
+            <Text profile="gmfMenuColumnHeader" position="800px 0px" size="300px 32px" text="Accuracy"/>
+            <Text profile="gmfMenuColumnHeaderRight" position="-20px 0px" size="300px 32px" text="Momentum"/>
+        </GuiElement>
+        <SmoothList profile="gmfMarketList" size="100% 520px" id="marketTable">
+            <ListItem profile="gmfMarketListItem">
+                <Text profile="gmfMenuCellLeft" position="20px 0px" size="360px 24px" name="marketName"/>
+                <Text profile="gmfMenuCellLeft" position="420px 0px" size="300px 24px" name="marketOutlook"/>
+                <Text profile="gmfMenuCellLeft" position="800px 0px" size="300px 24px" name="marketReliability"/>
+                <Text profile="gmfMenuCellRight" position="-20px 0px" size="300px 24px" name="marketMomentum"/>
+            </ListItem>
+        </SmoothList>
+        <ThreePartBitmap profile="gmfMarketListSlider" id="marketListSlider">
+            <Slider profile="fs25_listSlider" dataElementId="marketTable"/>
+        </ThreePartBitmap>
+        <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="cropDetailPage" visible="false">
+            <Button profile="fs25_subCategorySelectorTabbedTab" text="BACK TO MARKET REPORT" onClick="onClickBackToMarketReport" position="20px 0px" size="320px 40px">
+                <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+            </Button>
+            <Text profile="gmfDetailTitle" id="detailTitle" text="CROP MARKET OUTLOOK" position="20px -70px" size="1450px 40px"/>
+            <Text profile="gmfDetailSection" text="AT A GLANCE" position="20px -130px" size="1450px 24px"/>
+            <Text profile="gmfDetailLine" id="detailOutlook" text="Loading..." position="20px -158px" size="1450px 28px"/>
+            <Text profile="gmfDetailSection" text="FARM GUIDANCE" position="20px -220px" size="1450px 24px"/>
+            <Text profile="gmfDetailLine" id="detailRecommendation" text="Loading..." position="20px -248px" size="1450px 32px"/>
+            <Text profile="gmfDetailSection" text="PRICE TIMING" position="20px -310px" size="1450px 24px"/>
+            <Text profile="gmfDetailLine" id="detailHorizons" text="Loading..." position="20px -338px" size="1450px 28px"/>
+            <Text profile="gmfDetailSection" text="MARKET SUPPORTS" position="20px -400px" size="1450px 24px"/>
+            <Text profile="gmfDetailLine" id="detailDrivers" text="Loading..." position="20px -428px" size="1450px 72px" textWrapWidth="1450px" textMaxNumLines="3" textVerticalAlignment="top"/>
+            <Text profile="gmfDetailSection" text="WHAT TO WATCH" position="20px -530px" size="1450px 24px"/>
+            <Text profile="gmfDetailLine" id="detailRisks" text="Loading..." position="20px -558px" size="1450px 72px" textWrapWidth="1450px" textMaxNumLines="3" textVerticalAlignment="top"/>
+        </GuiElement>
+    </GuiElement>
+</GUI>
