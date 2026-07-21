@@ -1,6 +1,6 @@
--- Synchronizes GMF-managed station prices to clients. Production points own
--- their selling stations separately, so changing the server table alone does
--- not always update the client-side record used by the Prices menu.
+-- Synchronizes GMF-managed effective station prices to clients. Raw
+-- fillTypePrices remain under base-game ownership so GMF can preserve the
+-- station's nominal difference while replacing seasonal price movement.
 GlobalMarketForcesStationPriceEvent = {}
 local GlobalMarketForcesStationPriceEvent_mt = Class(GlobalMarketForcesStationPriceEvent, Event)
 
@@ -30,11 +30,12 @@ function GlobalMarketForcesStationPriceEvent:writeStream(streamId, connection)
 end
 
 function GlobalMarketForcesStationPriceEvent:run(connection)
-    if self.station ~= nil and self.station.fillTypePrices ~= nil then
-        self.station.fillTypePrices[self.fillTypeIndex] = self.price
+    if self.station ~= nil then
+        self.station.gmfEffectiveFillTypePrices = self.station.gmfEffectiveFillTypePrices or {}
+        self.station.gmfEffectiveFillTypePrices[self.fillTypeIndex] = self.price
     end
 
-    -- The event runs on each client after its local station record is updated.
+    -- The event runs on each client after its local effective price is updated.
     -- Rebuild once in the next update rather than once per changed crop.
     if GlobalMarketForces ~= nil then
         GlobalMarketForces.priceMenuRefreshPending = true

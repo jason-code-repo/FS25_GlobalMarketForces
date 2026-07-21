@@ -1,5 +1,5 @@
 GlobalMarketForcesConfig = {}
-GlobalMarketForcesConfig.debug = true
+GlobalMarketForcesConfig.debug = false
 GlobalMarketForcesConfig.globalPriceMultiplier = 1.0
 GlobalMarketForcesConfig.minimumPriceMultiplier = 0.35
 GlobalMarketForcesConfig.maximumPriceMultiplier = 3.75
