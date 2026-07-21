@@ -9,12 +9,12 @@ GlobalMarketForcesEvents.definitions={
 function GlobalMarketForces:generateWorldEventsForYear(year)
     local yearStartMonth = ((year - 1) * GlobalMarketForcesConfig.monthsPerYear) + 1
     for eventType, definition in pairs(GlobalMarketForcesEvents.definitions) do
-        if math.random() <= definition.probabilityPerYear then
+        if self:getMarketRandomFloat() <= definition.probabilityPerYear then
             table.insert(self.generatedEvents, {
                 eventType = eventType,
-                startMonth = yearStartMonth + math.random(0, GlobalMarketForcesConfig.monthsPerYear - 1),
-                durationMonths = math.random(definition.minDuration, definition.maxDuration),
-                severity = math.random(40, 100) / 100
+                startMonth = yearStartMonth + self:getMarketRandomInteger(0, GlobalMarketForcesConfig.monthsPerYear - 1),
+                durationMonths = self:getMarketRandomInteger(definition.minDuration, definition.maxDuration),
+                severity = self:getMarketRandomInteger(40, 100) / 100
             })
         end
     end
@@ -34,9 +34,7 @@ end
 
 function GlobalMarketForces:generateInitialWorldEvents()
     self.generatedEvents = {}
-    local seed = self.market.randomSeed or os.time()
-    self.market.randomSeed = seed
-    math.randomseed(seed)
+    self:ensureMarketRandomState()
     self.market.eventsGeneratedThroughYear = 0
     self:ensureWorldEventHorizon()
 end

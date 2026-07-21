@@ -1,5 +1,8 @@
 GlobalMarketForcesIntelligence={}
-function GlobalMarketForces:getAnalystRatingFromModifier(x) if x>=1.75 then return "Strong Buy" elseif x>=1.20 then return "Buy" elseif x>0.85 then return "Hold" elseif x>0.60 then return "Sell" end return "Strong Sell" end
+-- Keep the report's neutral band narrow enough for normal global and
+-- crop-specific conditions to be visible to the player. This affects only
+-- Outlook labels; it does not alter the GMF price calculation.
+function GlobalMarketForces:getAnalystRatingFromModifier(x) if x>=1.30 then return "Strong Buy" elseif x>=1.08 then return "Buy" elseif x>0.92 then return "Hold" elseif x>0.70 then return "Sell" end return "Strong Sell" end
 function GlobalMarketForces:getFarmerOutlookFromRating(r) if r=="Strong Buy" then return "Excellent" elseif r=="Buy" then return "Good" elseif r=="Hold" then return "Average" elseif r=="Sell" then return "Poor" end return "Avoid" end
 function GlobalMarketForces:getFarmerRecommendationFromOutlook(o) if o=="Excellent" then return "Aggressively Expand" elseif o=="Good" then return "Expand Production" elseif o=="Average" then return "Maintain Acreage" elseif o=="Poor" then return "Reduce Production" end return "Consider Avoiding" end
 function GlobalMarketForces:getDirectionFromDelta(d) if d>=0.25 then return "Strong Upward" elseif d>=0.08 then return "Upward" elseif d<=-0.25 then return "Strong Downward" elseif d<=-0.08 then return "Downward" end return "Stable" end

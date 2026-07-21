@@ -164,7 +164,7 @@ end
 function GlobalMarketForces:normalizeTrendDurationMonths(definition, remainingMonths)
     local minMonths = (definition.minYears or 1) * GlobalMarketForcesConfig.monthsPerYear
     local maxMonths = (definition.maxYears or 5) * GlobalMarketForcesConfig.monthsPerYear
-    local duration = math.random(minMonths, maxMonths)
+    local duration = self:getMarketRandomInteger(minMonths, maxMonths)
     if duration > remainingMonths then duration = remainingMonths end
     if remainingMonths - duration > 0 and remainingMonths - duration < minMonths then duration = remainingMonths end
     return duration
@@ -174,7 +174,7 @@ function GlobalMarketForces:pickWeightedDefinition(definitions)
     local keys = {}
     for key, _ in pairs(definitions) do table.insert(keys, key) end
     if #keys == 0 then return nil, nil end
-    local selectedKey = keys[math.random(1, #keys)]
+    local selectedKey = keys[self:getMarketRandomInteger(1, #keys)]
     return selectedKey, definitions[selectedKey]
 end
 
@@ -185,7 +185,7 @@ function GlobalMarketForces:generateGlobalTrendTimeline()
         local trendType, definition = self:pickWeightedDefinition(GlobalMarketForcesTrends.globalDefinitions)
         if trendType == nil then return end
         local duration = self:normalizeTrendDurationMonths(definition, remaining)
-        table.insert(self.globalTrends, { channel = "global", trendType = trendType, startMonth = month, durationMonths = duration, severity = math.random(55, 100) / 100 })
+        table.insert(self.globalTrends, { channel = "global", trendType = trendType, startMonth = month, durationMonths = duration, severity = self:getMarketRandomInteger(55, 100) / 100 })
         month = month + duration
     end
 end
@@ -197,7 +197,7 @@ function GlobalMarketForces:generateCropChannelTrendTimeline(cropName, channelNa
         local trendType, definition = self:pickWeightedDefinition(definitions)
         if trendType == nil then return end
         local duration = self:normalizeTrendDurationMonths(definition, remaining)
-        table.insert(self.cropTrends[cropName][channelName], { channel = channelName, trendType = trendType, startMonth = month, durationMonths = duration, severity = math.random(45, 100) / 100 })
+        table.insert(self.cropTrends[cropName][channelName], { channel = channelName, trendType = trendType, startMonth = month, durationMonths = duration, severity = self:getMarketRandomInteger(45, 100) / 100 })
         month = month + duration
     end
 end
@@ -205,7 +205,7 @@ end
 function GlobalMarketForces:getTrendDurationMonths(definition)
     local minMonths = math.max(12, (definition.minYears or GlobalMarketForcesConfig.minTrendYears or 1) * GlobalMarketForcesConfig.monthsPerYear)
     local maxMonths = math.max(minMonths, math.min(60, (definition.maxYears or GlobalMarketForcesConfig.maxTrendYears or 5) * GlobalMarketForcesConfig.monthsPerYear))
-    return math.random(minMonths, maxMonths)
+    return self:getMarketRandomInteger(minMonths, maxMonths)
 end
 
 function GlobalMarketForces:getTimelineNextStartMonth(entries, fallbackMonth)
@@ -223,7 +223,7 @@ function GlobalMarketForces:extendGlobalTrendTimeline(targetMonth)
         local trendType, definition = self:pickWeightedDefinition(GlobalMarketForcesTrends.globalDefinitions)
         if trendType == nil then return end
         local duration = self:getTrendDurationMonths(definition)
-        table.insert(self.globalTrends, { channel = "global", trendType = trendType, startMonth = nextStartMonth, durationMonths = duration, severity = math.random(55, 100) / 100 })
+        table.insert(self.globalTrends, { channel = "global", trendType = trendType, startMonth = nextStartMonth, durationMonths = duration, severity = self:getMarketRandomInteger(55, 100) / 100 })
         nextStartMonth = nextStartMonth + duration
     end
 end
@@ -237,7 +237,7 @@ function GlobalMarketForces:extendCropChannelTrendTimeline(cropName, channelName
         local trendType, definition = self:pickWeightedDefinition(definitions)
         if trendType == nil then return end
         local duration = self:getTrendDurationMonths(definition)
-        table.insert(entries, { channel = channelName, trendType = trendType, startMonth = nextStartMonth, durationMonths = duration, severity = math.random(45, 100) / 100 })
+        table.insert(entries, { channel = channelName, trendType = trendType, startMonth = nextStartMonth, durationMonths = duration, severity = self:getMarketRandomInteger(45, 100) / 100 })
         nextStartMonth = nextStartMonth + duration
     end
 end
