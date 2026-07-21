@@ -13,7 +13,7 @@ The mod includes a farmer-focused **Market Report** in the in-game menu, providi
 - A readable Market Brief explaining current global conditions and near-term analyst outlooks.
 - Clickable crop detail reports with practical farm guidance, price timing, market supports, and risks to watch.
 - GMF pricing applied to selling stations while preserving each station's normal price differences.
-- Station-level comparison logging for reviewing the default game price against the GMF price.
+- Optional station-level comparison logging for reviewing the default game price against the GMF price.
 - Persistent market state: trends and events continue between save sessions.
 - Multiplayer support.
 
@@ -35,14 +35,22 @@ Do not extract the ZIP into the mods folder.
 
 Open the in-game pause menu and select the green market-report tab.
 
+![Overall Market Report](docs/images/overallMarketReport.png)
+
 The overview contains:
 
 - **Market Brief** - the broad global cycle, any offsetting world conditions, and the near-term analyst outlook.
 - **Outlook** - the crop's overall selling conditions.
-- **Accuracy** - how dependable the forecast is at the current time.
+- **Forecast Accuracy** - how dependable the forecast is at the current time.
 - **Momentum** - the expected direction of the market.
 
-Select a crop row to open its detailed report. The report explains what the outlook means for your farm, expected price direction, supporting conditions, and risks worth monitoring.
+### Crop detail reports
+
+The crop rows on the Market Report are selectable. Select any crop to open that crop's detailed report; use **Back to Market Report** to return to the overview.
+
+![Crop Detail Report](docs/images/cropDetailReport.png)
+
+The detail report explains what the outlook means for your farm, price timing across the near, later-year, and long-term periods, the conditions supporting the crop, and the risks worth monitoring.
 
 ## Pricing Behavior
 
@@ -53,6 +61,14 @@ station base price x GMF crop modifier
 ```
 
 This keeps the normal price differences between stations while allowing the global market system to control the overall movement of managed crop prices. GMF pricing intentionally replaces the base game's station seasonal and great-demand price behavior for those crops.
+
+### Checking prices in the base-game Prices page
+
+The normal in-game **Prices** page shows the current selling prices calculated by GMF at each station. It also preserves the station-to-station price differences, so different buyers can still offer different prices for the same crop.
+
+![Base-game Prices page with GMF prices](docs/images/oldPricesPage.png)
+
+The graph on this page maps historical price points from earlier months, including the current GMF price. **It does not forecast future prices.** Use the Market Report and each crop's detail report for forecast guidance.
 
 ## Savegame Data
 
