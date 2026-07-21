@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="104">
   <author>Earshot</author>
-    <version>0.34.1.0</version>
+    <version>0.34.3.0</version>
   <title><en>Global Market Forces</en></title>
   <description><en><![CDATA[
 Global Market Forces adds crop-focused long-term pricing influenced by global cycles, crop demand, crop supply, crop policy, world events, and market intelligence.

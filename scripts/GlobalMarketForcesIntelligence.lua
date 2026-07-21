@@ -12,7 +12,24 @@ function GlobalMarketForces:getMarketConditionLabelFromScore(s) if s>=85 then re
 function GlobalMarketForces:getAverageModifierForWindow(c,start,months) local last=start+months-1; local total,count=0,0; for m=start,last do total=total+self:calculateCropModifier(c,m); count=count+1 end; return count>0 and total/count or self:calculateCropModifier(c,start) end
 function GlobalMarketForces:getTrendDisplayName(t,cropName) local d=t.channel=="global" and GlobalMarketForcesTrends.globalDefinitions[t.trendType] or self:getDefinitionForCropTrend(t.channel,t.trendType,cropName); return d and d.displayName or t.trendType end
 function GlobalMarketForces:getTrendBaseImpact(t,cropName) local d=t.channel=="global" and GlobalMarketForcesTrends.globalDefinitions[t.trendType] or self:getDefinitionForCropTrend(t.channel,t.trendType,cropName); return d and d.baseImpact or 0 end
-function GlobalMarketForces:getCropDriverLabels(c,m) local drivers,risks={},{}; for _,t in ipairs(self:getActiveGlobalTrends(m)) do table.insert(self:getTrendBaseImpact(t,c)<0 and risks or drivers,self:getTrendDisplayName(t,c)) end; for _,t in ipairs(self:getActiveCropTrends(c,m)) do local label=string.upper(string.sub(t.channel,1,1))..string.sub(t.channel,2)..": "..self:getTrendDisplayName(t,c); table.insert(self:getTrendBaseImpact(t,c)<0 and risks or drivers,label) end; for _,e in ipairs(self:getActiveEvents(m)) do local d=GlobalMarketForcesEvents.definitions[e.eventType]; local label=d and d.displayName or e.eventType; table.insert((d and d.priceDirection or 1)<0 and risks or drivers,label) end; return drivers,risks end
+function GlobalMarketForces:getCropDriverLabels(c,m)
+ local drivers,risks={},{}
+ local function addByImpact(label, impact)
+  if impact > 0.0001 then table.insert(drivers,label)
+  elseif impact < -0.0001 then table.insert(risks,label) end
+ end
+ for _,t in ipairs(self:getActiveGlobalTrends(m)) do addByImpact(self:getTrendDisplayName(t,c),self:getTrendBaseImpact(t,c)) end
+ for _,t in ipairs(self:getActiveCropTrends(c,m)) do
+  local label=string.upper(string.sub(t.channel,1,1))..string.sub(t.channel,2)..": "..self:getTrendDisplayName(t,c)
+  addByImpact(label,self:getTrendBaseImpact(t,c))
+ end
+ for _,e in ipairs(self:getActiveEvents(m)) do
+  local d=GlobalMarketForcesEvents.definitions[e.eventType]
+  local cropImpact=d and d.cropImpacts and d.cropImpacts[c]
+  if cropImpact ~= nil then addByImpact(d.displayName,cropImpact*(d.priceDirection or 1)) end
+ end
+ return drivers,risks
+end
 function GlobalMarketForces:getDynamicConfidenceScore(c,months)
  local m=self.market.currentMonthIndex or 1; local score=100
  if months>12 then score=score-45 elseif months>6 then score=score-30 else score=score-12 end

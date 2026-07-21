@@ -187,78 +187,41 @@ function GlobalMarketForcesMenuFrame:joinNaturalList(items)
     return table.concat(items, ", ", 1, #items - 1) .. ", and " .. items[#items]
 end
 
+function GlobalMarketForcesMenuFrame:capitalizeSentence(text)
+    return string.upper(string.sub(text, 1, 1)) .. string.sub(text, 2)
+end
+
+function GlobalMarketForcesMenuFrame:getReadableFactorSentence(factor, isSupport)
+    local channel, label = string.match(factor, "^(%a+): (.+)$")
+    local subject = string.lower(label or factor)
+    local verb = string.match(subject, "[^s]s$") ~= nil and "are" or "is"
+    local ending
+
+    if channel == "Demand" then
+        ending = isSupport and " " .. verb .. " strengthening the market." or " " .. verb .. " weakening the market."
+    elseif channel == "Supply" then
+        ending = isSupport and " " .. verb .. " tightening supplies." or " " .. verb .. " adding supply pressure."
+    elseif channel == "Policy" then
+        ending = isSupport and " " .. verb .. " supporting prices." or " " .. verb .. " weighing on prices."
+    else
+        ending = isSupport and " " .. verb .. " providing broader market support." or " " .. verb .. " adding broader market pressure."
+    end
+
+    return self:capitalizeSentence(subject .. ending)
+end
+
 function GlobalMarketForcesMenuFrame:getReadableSupportSummary(drivers)
-    if drivers == nil or #drivers == 0 then
-        return "No major support factors are active right now."
-    end
-
-    local groups = {
-        demand = {},
-        supply = {},
-        policy = {},
-        broader = {}
-    }
-
-    for _, driver in ipairs(drivers) do
-        local label = driver
-        if string.sub(driver, 1, 8) == "Demand: " then
-            label = string.sub(driver, 9)
-            table.insert(groups.demand, label)
-        elseif string.sub(driver, 1, 8) == "Supply: " then
-            label = string.sub(driver, 9)
-            table.insert(groups.supply, label)
-        elseif string.sub(driver, 1, 8) == "Policy: " then
-            label = string.sub(driver, 9)
-            table.insert(groups.policy, label)
-        else
-            table.insert(groups.broader, label)
-        end
-    end
-
-    local summaries = {}
-    if #groups.demand > 0 then table.insert(summaries, "demand strength (" .. self:joinNaturalList(groups.demand) .. ")") end
-    if #groups.supply > 0 then table.insert(summaries, "supply conditions (" .. self:joinNaturalList(groups.supply) .. ")") end
-    if #groups.policy > 0 then table.insert(summaries, "policy support (" .. self:joinNaturalList(groups.policy) .. ")") end
-    if #groups.broader > 0 then table.insert(summaries, "broader market conditions (" .. self:joinNaturalList(groups.broader) .. ")") end
-
-    return "Support is coming from " .. self:joinNaturalList(summaries) .. "."
+    if drivers == nil or #drivers == 0 then return "No major support factors are active right now." end
+    local sentences = {}
+    for _, driver in ipairs(drivers) do table.insert(sentences, self:getReadableFactorSentence(driver, true)) end
+    return table.concat(sentences, " ")
 end
 
 function GlobalMarketForcesMenuFrame:getReadableRiskSummary(risks)
-    if risks == nil or #risks == 0 then
-        return "No major risks are active right now."
-    end
-
-    local groups = {
-        demand = {},
-        supply = {},
-        policy = {},
-        broader = {}
-    }
-
-    for _, risk in ipairs(risks) do
-        local label = risk
-        if string.sub(risk, 1, 8) == "Demand: " then
-            label = string.sub(risk, 9)
-            table.insert(groups.demand, label)
-        elseif string.sub(risk, 1, 8) == "Supply: " then
-            label = string.sub(risk, 9)
-            table.insert(groups.supply, label)
-        elseif string.sub(risk, 1, 8) == "Policy: " then
-            label = string.sub(risk, 9)
-            table.insert(groups.policy, label)
-        else
-            table.insert(groups.broader, label)
-        end
-    end
-
-    local summaries = {}
-    if #groups.demand > 0 then table.insert(summaries, "demand weakness (" .. self:joinNaturalList(groups.demand) .. ")") end
-    if #groups.supply > 0 then table.insert(summaries, "supply conditions (" .. self:joinNaturalList(groups.supply) .. ")") end
-    if #groups.policy > 0 then table.insert(summaries, "policy risks (" .. self:joinNaturalList(groups.policy) .. ")") end
-    if #groups.broader > 0 then table.insert(summaries, "broader market conditions (" .. self:joinNaturalList(groups.broader) .. ")") end
-
-    return "The market faces risk from " .. self:joinNaturalList(summaries) .. "."
+    if risks == nil or #risks == 0 then return "No major risks are active right now." end
+    local sentences = {}
+    for _, risk in ipairs(risks) do table.insert(sentences, self:getReadableFactorSentence(risk, false)) end
+    return table.concat(sentences, " ")
 end
 
 function GlobalMarketForcesMenuFrame:onClickMarketRow(list, section, index)
