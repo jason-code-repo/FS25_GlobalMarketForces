@@ -37,6 +37,10 @@
     <Profile name="gmfMenuCellRight" extends="gmfMenuCell" with="anchorStretchingYRight">
         <textAlignment value="right"/>
     </Profile>
+    <Profile name="gmfMarketTableInstruction" extends="gmfMenuColumnHeader" with="anchorTopStretchingX">
+        <textSize value="14px"/>
+        <textColor value="$preset_colorWhite_50"/>
+    </Profile>
     <Profile name="gmfMarketListSlider" extends="fs25_listSliderBox" with="anchorTopRight">
         <position value="28px -126px"/>
         <size value="6px 520px"/>

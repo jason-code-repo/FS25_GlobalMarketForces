@@ -18,7 +18,17 @@ GlobalMarketForcesConfig.cropDemandTrendWeight = 1.55
 GlobalMarketForcesConfig.cropSupplyTrendWeight = 1.25
 GlobalMarketForcesConfig.cropPolicyTrendWeight = 0.90
 GlobalMarketForcesConfig.worldEventWeight = 0.85
-GlobalMarketForcesConfig.marketIntelligence = { enabled=true, shortTermMonths=6, mediumTermMonths=24, longTermMonths=60, leadersToShow=3 }
+-- Forecasts are intentionally strongest in the next six months and become
+-- progressively less certain. They describe the analyst view, not a second
+-- price calculation, so the actual market remains fair and save-deterministic.
+GlobalMarketForcesConfig.marketIntelligence = {
+  enabled=true,
+  shortTermMonths=6,
+  mediumTermMonths=12,
+  longTermMonths=24,
+  leadersToShow=3,
+  forecastVersion=1
+}
 
 -- v0.10.0 profile groups.
 -- The runtime uses the merged GlobalMarketForcesConfig.cropProfiles table, but this structure lets us tune crop categories separately.
