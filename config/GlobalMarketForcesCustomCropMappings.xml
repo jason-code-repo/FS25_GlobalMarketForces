@@ -99,6 +99,7 @@
     <crop alias="cottons" referenceCrop="COTTON" profileGroup="industrial"/>
     <crop alias="alfalfa" referenceCrop="HAY" profileGroup="forage"/>
     <crop alias="lucerne" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="field grass" referenceCrop="HAY" profileGroup="forage"/>
     <crop alias="clover" referenceCrop="HAY" profileGroup="forage"/>
     <crop alias="red clover" referenceCrop="HAY" profileGroup="forage"/>
     <crop alias="white clover" referenceCrop="HAY" profileGroup="forage"/>

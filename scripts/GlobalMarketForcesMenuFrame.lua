@@ -21,6 +21,7 @@ function GlobalMarketForcesMenuFrame:onFrameOpen()
 end
 
 function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends, month)
+    if not GlobalMarketForces:isForecastEnabled() then return nil end
     local activeTrend = globalTrends[1]
     if activeTrend == nil then return nil end
 
@@ -47,7 +48,7 @@ function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends,
 
     local definition = GlobalMarketForcesTrends.globalDefinitions[nextTrend.trendType]
     local actualDirection = definition and definition.baseImpact or 0
-    local confidence = remainingMonths <= 2 and 78 or 65
+    local confidence = GlobalMarketForces:adjustForecastConfidence(remainingMonths <= 2 and 78 or 65)
     GlobalMarketForces.market.globalCycleForecasts = GlobalMarketForces.market.globalCycleForecasts or {}
     local forecast = GlobalMarketForces.market.globalCycleForecasts[endMonth]
     if forecast == nil or forecast.issueMonth ~= month then
@@ -160,9 +161,17 @@ function GlobalMarketForcesMenuFrame:showCropDetail(row)
     self.cropDetailPage:setVisible(true)
 
     self.detailTitle:setText((row.displayName or row.fillTypeName) .. " Market Outlook")
-    self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Selling conditions are " .. string.lower(row.marketCondition) .. ". Forecast confidence is " .. string.lower(row.forecastReliability) .. ".")
+    if row.forecastDisabled then
+        self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Forecast accuracy is disabled for this savegame.")
+    else
+        self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Selling conditions are " .. string.lower(row.marketCondition) .. ". Forecast confidence is " .. string.lower(row.forecastReliability) .. ".")
+    end
     self.detailRecommendation:setText(self:getFarmGuidance(row))
-    self.detailHorizons:setText(GlobalMarketForces:getForecastSentence("Near term", row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Later this year", row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Long term", row.longTermDirection, row.longTermConfidence))
+    if row.forecastDisabled then
+        self.detailHorizons:setText("Forecasts are disabled for this savegame.")
+    else
+        self.detailHorizons:setText(GlobalMarketForces:getForecastSentence("Near term", row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Later this year", row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Long term", row.longTermDirection, row.longTermConfidence))
+    end
     self.detailDrivers:setText(self:getReadableSupportSummary(row.drivers))
     self.detailRisks:setText(self:getReadableRiskSummary(row.risks))
 end
@@ -230,6 +239,7 @@ function GlobalMarketForcesMenuFrame:onClickMarketRow(list, section, index)
 end
 
 function GlobalMarketForcesMenuFrame:onClickBackToMarketReport()
+    self.marketRows = GlobalMarketForces:getMarketIntelligenceSnapshot()
     self:showMarketTable()
     self.marketTable:reloadData()
 end

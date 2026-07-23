@@ -5,7 +5,7 @@ GlobalMarketForces.market={currentMonthIndex=1,maxMonths=60,basePricesCaptured=f
 GlobalMarketForces.lastKnownPeriod=nil
 
 function GlobalMarketForces:log(msg)
-    if GlobalMarketForcesConfig and GlobalMarketForcesConfig.debug then
+    if self:isLoggingEnabled() then
         print(string.format("[%s] %s",self.MOD_NAME,tostring(msg)))
     end
 end
@@ -14,18 +14,21 @@ function GlobalMarketForces:loadMap()
     self.market.maxMonths=GlobalMarketForcesConfig.maxMonths or 60
     self:loadCustomCropAliases()
     self:installSellingStationPriceOverride()
-    self:loadMarketState()
     self:registerDetectedCustomCropProfiles()
     self:registerReportActionEvents()
-    self:captureBasePrices()
-    if not self.market.generated then
-        self:generateLongTermTrends()
-        self:generateInitialWorldEvents()
-        self.market.generated=true
+    if g_server ~= nil then
+        self:loadMarketState()
+        self:captureBasePrices()
+        if not self.market.generated then
+            self:generateLongTermTrends()
+            self:generateInitialWorldEvents()
+            self.market.generated=true
+        end
+        self.market.trendProfileSchemaVersion = GlobalMarketForcesConfig.trendProfileSchemaVersion or 1
+        self:ensureLongTermTrendHorizon()
+        self:ensureWorldEventHorizon()
+        self:applyCropPrices()
     end
-    self:ensureLongTermTrendHorizon()
-    self:ensureWorldEventHorizon()
-    self:applyCropPrices()
     self:registerMenuPage()
 end
 
@@ -41,6 +44,7 @@ end
 function GlobalMarketForces:getCurrentPeriodSafe() return g_currentMission and g_currentMission.environment and g_currentMission.environment.currentPeriod or nil end
 
 function GlobalMarketForces:checkMonthChange()
+    if g_server == nil then return end
     local p=self:getCurrentPeriodSafe()
     if not p then return end
     if not self.lastKnownPeriod then self.lastKnownPeriod=p; return end
@@ -52,6 +56,9 @@ function GlobalMarketForces:checkMonthChange()
         self:ensureWorldEventHorizon()
         self:applyCropPrices()
         self:saveMarketState()
+        if GlobalMarketForcesMarketStateEvent ~= nil then
+            GlobalMarketForcesMarketStateEvent.broadcastState()
+        end
     end
 end
 

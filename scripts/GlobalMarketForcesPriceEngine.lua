@@ -358,7 +358,7 @@ function GlobalMarketForces:applySellingStationPrices()
                 if fillTypeIndex ~= nil and station.acceptedFillTypes ~= nil and station.acceptedFillTypes[fillTypeIndex] then
                     local modifier = self:calculateCropModifier(cropName, month)
                     local defaultPrice = nil
-                    if GlobalMarketForcesConfig.debug then
+                    if self:isLoggingEnabled() then
                         defaultPrice = self:getDefaultSellingStationPrice(station, fillTypeIndex, basePrice)
                     end
                     local nominalPrice = baseEffectivePrices[cropName] or basePrice

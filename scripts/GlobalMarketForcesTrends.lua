@@ -71,6 +71,28 @@ GlobalMarketForcesTrends.groupDefinitions = {
         }
     },
 
+    sugarCrop = {
+        demand = {
+            sugarDemandGrowth = { displayName = "Sugar Demand Growth", minYears = 1, maxYears = 4, baseImpact = 0.34 },
+            ethanolDemandGrowth = { displayName = "Ethanol Demand Growth", minYears = 1, maxYears = 5, baseImpact = 0.42, cropBias = { SUGARCANE = 1.45, SUGARBEET = 1.15 } },
+            sugarDemandSlump = { displayName = "Sugar Demand Slowdown", minYears = 1, maxYears = 3, baseImpact = -0.32 },
+            foodProcessingDemand = { displayName = "Food Processing Demand", minYears = 1, maxYears = 4, baseImpact = 0.26, cropBias = { SUGARBEET = 1.20 } }
+        },
+        supply = {
+            normalSugarSupply = { displayName = "Normal Sugar Supply", minYears = 1, maxYears = 4, baseImpact = 0 },
+            sugarSupplyShortage = { displayName = "Sugar Supply Shortage", minYears = 1, maxYears = 3, baseImpact = 0.38 },
+            beetHarvestPressure = { displayName = "Sugar Beet Harvest Pressure", minYears = 1, maxYears = 2, baseImpact = 0.34, cropBias = { SUGARBEET = 1.55 } },
+            caneWeatherStress = { displayName = "Sugarcane Weather Stress", minYears = 1, maxYears = 3, baseImpact = 0.40, cropBias = { SUGARCANE = 1.60 } },
+            strongSugarHarvest = { displayName = "Strong Sugar Harvest", minYears = 1, maxYears = 3, baseImpact = -0.30 }
+        },
+        policy = {
+            neutralSugarPolicy = { displayName = "Neutral Sugar Policy", minYears = 1, maxYears = 5, baseImpact = 0 },
+            ethanolMandate = { displayName = "Ethanol Blending Mandate", minYears = 1, maxYears = 5, baseImpact = 0.32, cropBias = { SUGARCANE = 1.45, SUGARBEET = 1.15 } },
+            sugarExportSupport = { displayName = "Sugar Export Support", minYears = 1, maxYears = 4, baseImpact = 0.24 },
+            sugarImportPressure = { displayName = "Sugar Import Pressure", minYears = 1, maxYears = 4, baseImpact = -0.24 }
+        }
+    },
+
     orchard = {
         demand = {
             premiumFoodDemand = { displayName = "Premium Food Demand", minYears = 2, maxYears = 5, baseImpact = 0.24 },
@@ -267,6 +289,32 @@ function GlobalMarketForces:ensureLongTermTrendHorizon()
         self:extendCropChannelTrendTimeline(cropName, "supply", self:getDefinitionsForCropChannel(cropName, "supply"), targetMonth)
         self:extendCropChannelTrendTimeline(cropName, "policy", self:getDefinitionsForCropChannel(cropName, "policy"), targetMonth)
     end
+end
+
+-- Existing saves retain their market timeline. When a crop is intentionally
+-- moved into a new profile group, regenerate only that crop's forward trend
+-- channels so its report and prices use the new market logic immediately.
+function GlobalMarketForces:migrateTrendProfileSchema()
+    local targetVersion = GlobalMarketForcesConfig.trendProfileSchemaVersion or 1
+    self.market = self.market or {}
+    if (self.market.trendProfileSchemaVersion or 1) >= targetVersion then return false end
+
+    self.cropTrends = self.cropTrends or {}
+    local currentMonth = self.market.currentMonthIndex or 1
+    local targetMonth = currentMonth + (GlobalMarketForcesConfig.marketPlanningHorizonMonths or 60) - 1
+    for _, cropName in ipairs({ "SUGARBEET", "SUGARCANE" }) do
+        if GlobalMarketForcesConfig.marketProfiles[cropName] ~= nil then
+            self.cropTrends[cropName] = { demand = {}, supply = {}, policy = {} }
+            self:extendCropChannelTrendTimeline(cropName, "demand", self:getDefinitionsForCropChannel(cropName, "demand"), targetMonth)
+            self:extendCropChannelTrendTimeline(cropName, "supply", self:getDefinitionsForCropChannel(cropName, "supply"), targetMonth)
+            self:extendCropChannelTrendTimeline(cropName, "policy", self:getDefinitionsForCropChannel(cropName, "policy"), targetMonth)
+        end
+    end
+
+    self.market.cropForecasts = {}
+    self.market.trendProfileSchemaVersion = targetVersion
+    self:log("Updated sugar crop trend profiles for this savegame")
+    return true
 end
 
 function GlobalMarketForces:isTrendActive(trend, monthIndex)

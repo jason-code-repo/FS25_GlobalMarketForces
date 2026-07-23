@@ -1,5 +1,18 @@
 GlobalMarketForcesConfig = {}
+-- Developer-only diagnostics. This is intentionally not exposed in the
+-- player-facing Report Settings page.
 GlobalMarketForcesConfig.debug = false
+GlobalMarketForcesConfig.savegameSettings = {
+  loggingEnabled = false,
+  forecastAccuracy = "Normal"
+}
+GlobalMarketForcesConfig.forecastAccuracyPresets = {
+  Disabled = { enabled = false },
+  Low = { enabled = true, multiplier = 0.60 },
+  Normal = { enabled = true, multiplier = 1.00 },
+  High = { enabled = true, highConfidenceBlend = 0.60 },
+  Perfect = { enabled = true, perfect = true }
+}
 GlobalMarketForcesConfig.globalPriceMultiplier = 1.0
 GlobalMarketForcesConfig.minimumPriceMultiplier = 0.35
 GlobalMarketForcesConfig.maximumPriceMultiplier = 3.75
@@ -9,6 +22,9 @@ GlobalMarketForcesConfig.monthsPerYear = 12
 GlobalMarketForcesConfig.maxYears = 5
 GlobalMarketForcesConfig.maxMonths = 60
 GlobalMarketForcesConfig.marketPlanningHorizonMonths = 60
+-- Bump when an existing crop is moved to a different market group. Saved
+-- timelines then receive the correct group-specific trend pools once.
+GlobalMarketForcesConfig.trendProfileSchemaVersion = 2
 GlobalMarketForcesConfig.enableGlobalTrends = true
 GlobalMarketForcesConfig.enableCropDemandTrends = true
 GlobalMarketForcesConfig.enableCropSupplyTrends = true
@@ -27,7 +43,7 @@ GlobalMarketForcesConfig.marketIntelligence = {
   mediumTermMonths=12,
   longTermMonths=24,
   leadersToShow=3,
-  forecastVersion=1
+  forecastVersion=2
 }
 
 -- v0.10.0 profile groups.
@@ -54,7 +70,13 @@ GlobalMarketForcesConfig.vegetableProfiles = {
   PEA={volatility=0.065,seasonalWeight=1.15,globalTrendSensitivity=0.70,demandSensitivity=1.30,supplySensitivity=1.25,policySensitivity=0.60,profileGroup="vegetable"},
   SPINACH={volatility=0.080,seasonalWeight=1.25,globalTrendSensitivity=0.60,demandSensitivity=1.40,supplySensitivity=1.40,policySensitivity=0.50,profileGroup="vegetable"},
   ONION={volatility=0.060,seasonalWeight=1.10,globalTrendSensitivity=0.75,demandSensitivity=1.20,supplySensitivity=1.20,policySensitivity=0.65,profileGroup="vegetable"},
-  SUGARBEET={volatility=0.045,seasonalWeight=1.00,globalTrendSensitivity=1.00,demandSensitivity=1.10,supplySensitivity=1.10,policySensitivity=1.00,profileGroup="vegetable"}
+}
+
+-- Sugar beet and sugarcane share sugar and ethanol market drivers, while
+-- retaining crop-specific sensitivity to supply, demand, and policy shocks.
+GlobalMarketForcesConfig.sugarCropProfiles = {
+  SUGARBEET={volatility=0.045,seasonalWeight=1.00,globalTrendSensitivity=1.00,demandSensitivity=1.10,supplySensitivity=1.20,policySensitivity=1.10,profileGroup="sugarCrop"},
+  SUGARCANE={volatility=0.050,seasonalWeight=0.85,globalTrendSensitivity=1.05,demandSensitivity=1.25,supplySensitivity=1.15,policySensitivity=1.30,profileGroup="sugarCrop"}
 }
 
 -- Reserved for future orchard/perennial crop support, for example GRAPE and OLIVE.
@@ -85,6 +107,7 @@ end
 GlobalMarketForcesConfig.cropProfiles = {}
 GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.grainProfiles)
 GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.vegetableProfiles)
+GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.sugarCropProfiles)
 GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.orchardProfiles)
 GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.industrialProfiles)
 GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles, GlobalMarketForcesConfig.forageProfiles)
@@ -113,6 +136,6 @@ GlobalMarketForcesConfig.genericCustomCropProfile = {
 
 GlobalMarketForcesConfig.seasonalCurves = {
  WHEAT={1.08,1.06,1.03,1.00,0.96,0.92,0.88,0.91,0.96,1.02,1.07,1.10}, BARLEY={1.06,1.05,1.02,1.00,0.97,0.93,0.90,0.92,0.97,1.01,1.05,1.08}, OAT={1.05,1.04,1.02,1.00,0.98,0.95,0.92,0.94,0.98,1.01,1.04,1.06}, MAIZE={1.10,1.08,1.05,1.01,0.98,0.94,0.90,0.88,0.93,1.00,1.06,1.11}, SOYBEAN={1.09,1.07,1.04,1.01,0.97,0.93,0.90,0.92,0.97,1.03,1.08,1.12}, CANOLA={1.07,1.05,1.03,1.00,0.97,0.94,0.91,0.93,0.98,1.02,1.06,1.09}, SUNFLOWER={1.08,1.06,1.03,1.00,0.96,0.93,0.91,0.94,0.99,1.03,1.07,1.10}, SORGHUM={1.06,1.04,1.02,1.00,0.97,0.94,0.91,0.93,0.97,1.01,1.05,1.07},
- POTATO={1.04,1.03,1.01,0.99,0.96,0.94,0.95,0.98,1.02,1.05,1.07,1.06}, SUGARBEET={1.03,1.02,1.00,0.98,0.96,0.95,0.96,0.99,1.03,1.06,1.07,1.05}, COTTON={1.08,1.06,1.04,1.01,0.98,0.95,0.93,0.95,1.00,1.06,1.10,1.11}, RICE={1.07,1.05,1.03,1.00,0.96,0.93,0.92,0.96,1.02,1.07,1.09,1.08}, LONGGRAINRICE={1.08,1.06,1.03,1.00,0.96,0.93,0.92,0.97,1.03,1.08,1.10,1.09},
+ POTATO={1.04,1.03,1.01,0.99,0.96,0.94,0.95,0.98,1.02,1.05,1.07,1.06}, SUGARBEET={1.03,1.02,1.00,0.98,0.96,0.95,0.96,0.99,1.03,1.06,1.07,1.05}, SUGARCANE={1.01,1.00,0.99,0.98,0.98,0.99,1.00,1.02,1.04,1.05,1.04,1.02}, COTTON={1.08,1.06,1.04,1.01,0.98,0.95,0.93,0.95,1.00,1.06,1.10,1.11}, RICE={1.07,1.05,1.03,1.00,0.96,0.93,0.92,0.96,1.02,1.07,1.09,1.08}, LONGGRAINRICE={1.08,1.06,1.03,1.00,0.96,0.93,0.92,0.97,1.03,1.08,1.10,1.09},
  GRAPE={1.02,1.02,1.01,1.00,0.99,0.98,0.98,0.99,1.00,1.02,1.03,1.03}, OLIVE={1.01,1.01,1.00,1.00,0.99,0.99,0.98,0.99,1.00,1.01,1.02,1.02}
 }

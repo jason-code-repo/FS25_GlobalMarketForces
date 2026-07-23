@@ -156,7 +156,7 @@ function GlobalMarketForces:registerDetectedCustomCropProfiles(reportDiagnostics
         end
     end
 
-    if reportDiagnostics and GlobalMarketForcesConfig.debug and (unknownFruitCount > 0 or registeredCount > 0) then
+    if reportDiagnostics and self:isLoggingEnabled() and (unknownFruitCount > 0 or registeredCount > 0) then
         self:log(string.format(
             "[%s] Custom crop scan: %d unprofiled fruit type(s), %d sellable, %d registered, %d already managed",
             self.MOD_NAME,
@@ -181,10 +181,17 @@ end
 function GlobalMarketForces:applyNewCustomCropProfiles(registeredCount, source)
     if registeredCount <= 0 then return end
 
+    -- The server owns trend generation. Clients receive the new profiles and
+    -- their matching timeline through the market-state synchronization event.
+    if g_server == nil then return end
+
     self:captureBasePrices()
     self:ensureLongTermTrendHorizon()
     self:ensureWorldEventHorizon()
     self:applyCropPrices()
+    if GlobalMarketForcesMarketStateEvent ~= nil then
+        GlobalMarketForcesMarketStateEvent.broadcastState()
+    end
     self:log(string.format("Registered %d custom crop market profile(s) %s", registeredCount, source))
 end
 

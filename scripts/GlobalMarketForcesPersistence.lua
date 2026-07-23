@@ -44,6 +44,65 @@ function GlobalMarketForces:loadMarketState()
     self.cropPriceHistory = self.cropPriceHistory or {}
     self.market.cropForecasts = self.market.cropForecasts or {}
     self.market.globalCycleForecasts = self.market.globalCycleForecasts or {}
+    self:getSavegameSettings()
+end
+
+function GlobalMarketForces:getSavegameSettings()
+    self.market = self.market or {}
+    self.market.settings = self.market.settings or {}
+    local defaults = GlobalMarketForcesConfig.savegameSettings or {}
+    if self.market.settings.loggingEnabled == nil then self.market.settings.loggingEnabled = defaults.loggingEnabled == true end
+    local preset = self.market.settings.forecastAccuracy
+    if GlobalMarketForcesConfig.forecastAccuracyPresets[preset] == nil then
+        self.market.settings.forecastAccuracy = defaults.forecastAccuracy or "Normal"
+    end
+    return self.market.settings
+end
+
+function GlobalMarketForces:isLoggingEnabled()
+    return (GlobalMarketForcesConfig and GlobalMarketForcesConfig.debug == true) or self:getSavegameSettings().loggingEnabled == true
+end
+
+function GlobalMarketForces:getForecastAccuracyPreset()
+    local setting = self:getSavegameSettings().forecastAccuracy
+    return GlobalMarketForcesConfig.forecastAccuracyPresets[setting], setting
+end
+
+function GlobalMarketForces:isForecastEnabled()
+    local preset = self:getForecastAccuracyPreset()
+    return preset ~= nil and preset.enabled == true
+end
+
+function GlobalMarketForces:setForecastAccuracy(setting)
+    if GlobalMarketForcesConfig.forecastAccuracyPresets[setting] == nil then return false end
+    local settings = self:getSavegameSettings()
+    if settings.forecastAccuracy == setting then return false end
+    settings.forecastAccuracy = setting
+    self.market.cropForecasts = {}
+    self.market.globalCycleForecasts = {}
+    self:saveMarketState()
+    return true
+end
+
+-- Applies the host's market timeline after it has been received through the
+-- multiplayer state event. Clients never extend or save this state locally.
+function GlobalMarketForces:applyNetworkMarketState(state)
+    if state == nil then return end
+    self.market = state.market or {}
+    self.globalTrends = state.globalTrends or {}
+    self.generatedEvents = state.generatedEvents or {}
+    self.cropTrends = state.cropTrends or {}
+    self.basePrices = state.basePrices or {}
+    self.market.cropForecasts = {}
+    self.market.globalCycleForecasts = {}
+    self:getSavegameSettings()
+    self.marketDirty = false
+
+    -- This updates the local fill-type values. Station-specific prices arrive
+    -- in the host's existing station-price events immediately before this
+    -- market-state event.
+    self:applyCropPrices()
+    self.priceMenuRefreshPending = true
 end
 
 function GlobalMarketForces:saveMarketState()
@@ -80,9 +139,15 @@ end
 
 function GlobalMarketForces:readMarketStateFromXML(xmlFile, key)
     local stateKey = key .. ".globalMarketForces"
+    self.market = self.market or {}
+    self.market.settings = self.market.settings or {}
+    local loggingEnabled = xmlFile:getBool(stateKey .. ".settings#loggingEnabled")
+    if loggingEnabled ~= nil then self.market.settings.loggingEnabled = loggingEnabled end
+    local forecastAccuracy = xmlFile:getString(stateKey .. ".settings#forecastAccuracy")
+    if forecastAccuracy ~= nil then self.market.settings.forecastAccuracy = forecastAccuracy end
+    self:getSavegameSettings()
     if not xmlFile:hasProperty(stateKey .. "#generated") then return end
 
-    self.market = self.market or {}
     self.market.currentMonthIndex = xmlFile:getInt(stateKey .. "#currentMonthIndex") or 1
     self.market.maxMonths = xmlFile:getInt(stateKey .. "#maxMonths") or GlobalMarketForcesConfig.maxMonths or 60
     self.market.basePricesCaptured = xmlFile:getBool(stateKey .. "#basePricesCaptured") or false
@@ -90,6 +155,7 @@ function GlobalMarketForces:readMarketStateFromXML(xmlFile, key)
     self.market.randomSeed = xmlFile:getInt(stateKey .. "#randomSeed")
     self.market.randomState = xmlFile:getInt(stateKey .. "#randomState")
     self.market.eventsGeneratedThroughYear = xmlFile:getInt(stateKey .. "#eventsGeneratedThroughYear") or GlobalMarketForcesConfig.maxYears or 5
+    self.market.trendProfileSchemaVersion = xmlFile:getInt(stateKey .. "#trendProfileSchemaVersion") or 1
     self.market.cropForecasts = {}
     local forecastIndex = 0
     while xmlFile:hasProperty(stateKey .. ".cropForecast(" .. forecastIndex .. ")") do
@@ -154,6 +220,10 @@ function GlobalMarketForces:writeMarketStateToXML(xmlFile, key)
     if market.randomSeed ~= nil then xmlFile:setInt(stateKey .. "#randomSeed", market.randomSeed) end
     if market.randomState ~= nil then xmlFile:setInt(stateKey .. "#randomState", market.randomState) end
     xmlFile:setInt(stateKey .. "#eventsGeneratedThroughYear", market.eventsGeneratedThroughYear or 0)
+    xmlFile:setInt(stateKey .. "#trendProfileSchemaVersion", market.trendProfileSchemaVersion or 1)
+    local settings = self:getSavegameSettings()
+    xmlFile:setBool(stateKey .. ".settings#loggingEnabled", settings.loggingEnabled == true)
+    xmlFile:setString(stateKey .. ".settings#forecastAccuracy", settings.forecastAccuracy)
 
     local forecastIndex = 0
     for forecastName, forecast in pairs(market.cropForecasts or {}) do
@@ -208,6 +278,7 @@ function GlobalMarketForces:writeMarketStateToXML(xmlFile, key)
 end
 
 function GlobalMarketForces:loadMarketStateFromSavegame()
+    if g_server == nil then return end
     if g_currentMission == nil or g_currentMission.missionInfo == nil then return end
     local savegameDirectory = g_currentMission.missionInfo.savegameDirectory
     if savegameDirectory == nil then return end
@@ -222,7 +293,8 @@ function GlobalMarketForces:loadMarketStateFromSavegame()
 
     self:readMarketStateFromXML(xmlFile, "globalMarketForces")
     xmlFile:delete()
-    if self:pruneExpiredMarketEntries() > 0 then self:saveMarketState() end
+    local migratedProfiles = self:migrateTrendProfileSchema()
+    if self:pruneExpiredMarketEntries() > 0 or migratedProfiles then self:saveMarketState() end
     self:ensureLongTermTrendHorizon()
     self:ensureWorldEventHorizon()
     self:applyCropPrices()

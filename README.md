@@ -52,6 +52,16 @@ The crop rows on the Market Report are selectable. Select any crop to open that 
 
 The detail report explains what the outlook means for your farm, price timing across the near, later-year, and long-term periods, the conditions supporting the crop, and the risks worth monitoring.
 
+## Forecast Accuracy Setting
+
+Open the pause menu, choose **Game Settings**, then scroll to the **Global Market Forces** section to choose **Forecast Accuracy**. This setting is saved with the current savegame and controls how dependable the Market Report's forward-looking guidance is; it does not change the actual market simulation or selling prices.
+
+- **Disabled** — hides forecast guidance, leaving current market conditions and price history for the player to interpret.
+- **Low** — forecasts are deliberately uncertain, especially beyond the near term.
+- **Normal** — the default balance: generally useful near-term guidance with uncertainty increasing over time and during volatile conditions.
+- **High** — forecasts are more dependable while retaining some market uncertainty.
+- **Perfect** — shows the exact direction implied by GMF's scheduled market conditions.
+
 ## Pricing Behavior
 
 For crops managed by GMF, each selling station begins with its own difficulty-adjusted base price. GMF then applies its crop modifier:
@@ -109,7 +119,15 @@ If no alias is present, GMF uses a generic crop profile. It still participates i
 
 ## Development and Debugging
 
-When debug logging is enabled in the configuration, the game log records price comparisons in this form:
+GMF keeps diagnostic logging out of the in-game settings UI. Contributors can enable it for an existing test save by editing that save's `globalMarketForces.xml` file:
+
+```xml
+<settings loggingEnabled="true" forecastAccuracy="Normal"/>
+```
+
+For a new savegame default, change `loggingEnabled` in `GlobalMarketForcesConfig.savegameSettings` in `scripts/GlobalMarketForcesConfig.lua`. The value is then persisted per savegame.
+
+When logging is enabled, the game log records price comparisons in this form:
 
 ```text
 Station | CROP: default 0.000000, GMF 0.000000 (+0.0%), GMF modifier 0.0000x

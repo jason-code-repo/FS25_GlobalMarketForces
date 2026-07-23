@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="104">
   <author>Earshot</author>
-    <version>0.35.1.0</version>
+    <version>0.35.2.0</version>
   <title><en>Global Market Forces</en></title>
   <description><en><![CDATA[
 Global Market Forces adds crop-focused long-term pricing influenced by global cycles, crop demand, crop supply, crop policy, world events, and market intelligence.
@@ -18,6 +18,9 @@ Global Market Forces adds crop-focused long-term pricing influenced by global cy
     <sourceFile filename="scripts/GlobalMarketForcesIntelligence.lua" />
     <sourceFile filename="scripts/GlobalMarketForcesPriceEngine.lua" />
     <sourceFile filename="scripts/GlobalMarketForcesPersistence.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesForecastSettingsEvent.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesMarketStateEvent.lua" />
+    <sourceFile filename="scripts/GlobalMarketForcesSettings.lua" />
     <sourceFile filename="scripts/GlobalMarketForcesGui.lua" />
     <sourceFile filename="scripts/GlobalMarketForcesMenuFrame.lua" />
   </extraSourceFiles>
@@ -33,6 +36,15 @@ Global Market Forces adds crop-focused long-term pricing influenced by global cy
   <l10n>
     <text name="input_GMF_TOGGLE_REPORT">
       <en>Global Market Forces: Toggle Market Report</en>
+    </text>
+    <text name="gmf_settings_header">
+      <en>GLOBAL MARKET FORCES</en>
+    </text>
+    <text name="gmf_forecast_accuracy">
+      <en>Forecast Accuracy</en>
+    </text>
+    <text name="gmf_forecast_accuracy_tooltip">
+      <en>Controls how reliable Market Report forecasts are in this savegame. Disabled hides forecast guidance; Perfect shows exact forecasts.</en>
     </text>
   </l10n>
 </modDesc>

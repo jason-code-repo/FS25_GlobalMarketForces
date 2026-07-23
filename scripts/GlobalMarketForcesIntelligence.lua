@@ -39,7 +39,16 @@ function GlobalMarketForces:getDynamicConfidenceScore(c,months)
  local pos,neg=0,0; for _,t in ipairs(self:getActiveCropTrends(c,m)) do local b=self:getTrendBaseImpact(t,c); if b>0.05 then pos=pos+1 elseif b<-0.05 then neg=neg+1 end end
  if pos>0 and neg>0 then score=score-18 end
  score=score-math.min(12,((GlobalMarketForcesConfig.marketProfiles[c] or {}).volatility or 0)*150)
- return math.max(20,math.min(95,score))
+ return self:adjustForecastConfidence(score)
+end
+
+function GlobalMarketForces:adjustForecastConfidence(score)
+ score = math.max(20,math.min(95,score))
+ local preset = self:getForecastAccuracyPreset()
+ if preset.perfect then return 100 end
+ if preset.multiplier ~= nil then return math.max(20,math.min(95,math.floor(score * preset.multiplier + 0.5))) end
+ if preset.highConfidenceBlend ~= nil then return math.max(20,math.min(95,math.floor(score + ((100 - score) * preset.highConfidenceBlend) + 0.5))) end
+ return score
 end
 
 -- A deterministic pseudo-random value prevents opening the report from
@@ -63,6 +72,7 @@ function GlobalMarketForces:getForecastDirection(actualDirection, confidence, ke
 end
 
 function GlobalMarketForces:getIssuedCropForecast(c,months,actualDirection)
+ if not self:isForecastEnabled() then return { months=months, confidence=0, direction=nil, disabled=true } end
  local issueMonth=self.market.currentMonthIndex or 1
  self.market.cropForecasts=self.market.cropForecasts or {}
  local key=c..":"..months
@@ -76,6 +86,7 @@ function GlobalMarketForces:getIssuedCropForecast(c,months,actualDirection)
 end
 
 function GlobalMarketForces:getForecastSentence(label,direction,confidence)
+ if direction == nil then return label..": Forecasts are disabled for this savegame." end
  local words={ ["Strong Upward"]="rise strongly", Upward="improve", Stable="remain broadly steady", Downward="weaken", ["Strong Downward"]="weaken sharply" }
  local movement=words[direction] or "remain uncertain"
  if confidence>=75 then return label..": Prices are expected to "..movement.."."
@@ -105,7 +116,8 @@ function GlobalMarketForces:getCropMarketIntelligence(c)
  local longForecast=self:getIssuedCropForecast(c,lt,self:getDirectionFromDelta(self:getAverageModifierForWindow(c,cur,lt)-cm))
  local rating=self:getAnalystRatingFromModifier(cm); local out=self:getFarmerOutlookFromRating(rating); local drivers,risks=self:getCropDriverLabels(c,cur); local marketType=(GlobalMarketForcesConfig.marketProfiles[c] or {}).marketType or "crop"
  local displayName = self:getFillTypeReportInfo(c)
- return {fillTypeName=c,displayName=displayName,marketType=marketType,currentModifier=cm,analystRating=rating,farmerOutlook=out,farmerRecommendation=self:getFarmerRecommendationFromOutlook(out),momentumLabel=self:getMomentumLabel(shortForecast.direction),shortTermDirection=shortForecast.direction,mediumTermDirection=mediumForecast.direction,longTermDirection=longForecast.direction,shortTermConfidence=shortForecast.confidence,mediumTermConfidence=mediumForecast.confidence,longTermConfidence=longForecast.confidence,forecastReliability=self:getConfidenceLabelFromScore(shortForecast.confidence),marketCondition=self:getMarketConditionLabelFromScore(shortForecast.confidence),drivers=drivers,risks=risks}
+ local forecastsDisabled = shortForecast.disabled == true
+ return {fillTypeName=c,displayName=displayName,marketType=marketType,currentModifier=cm,analystRating=rating,farmerOutlook=out,farmerRecommendation=self:getFarmerRecommendationFromOutlook(out),momentumLabel=forecastsDisabled and "Unavailable" or self:getMomentumLabel(shortForecast.direction),shortTermDirection=shortForecast.direction,mediumTermDirection=mediumForecast.direction,longTermDirection=longForecast.direction,shortTermConfidence=shortForecast.confidence,mediumTermConfidence=mediumForecast.confidence,longTermConfidence=longForecast.confidence,forecastReliability=forecastsDisabled and "Disabled" or self:getConfidenceLabelFromScore(shortForecast.confidence),marketCondition=forecastsDisabled and "unknown" or self:getMarketConditionLabelFromScore(shortForecast.confidence),forecastDisabled=forecastsDisabled,drivers=drivers,risks=risks}
 end
 function GlobalMarketForces:isReportableMarketCrop(cropName)
  local fillTypeIndex = self:getFillTypeIndex(cropName)
