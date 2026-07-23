@@ -173,7 +173,8 @@ end
 -- A cropBias table means that this is a named, crop-targeted trend. Trends
 -- without one are intentionally broad and apply to the whole profile group.
 function GlobalMarketForces:isCropTrendDefinitionRelevant(definition, cropName)
-    return definition ~= nil and (definition.cropBias == nil or definition.cropBias[cropName] ~= nil)
+    local referenceCrop = self:getTrendReferenceCrop(cropName)
+    return definition ~= nil and (definition.cropBias == nil or definition.cropBias[cropName] ~= nil or definition.cropBias[referenceCrop] ~= nil)
 end
 
 function GlobalMarketForces:pickWeightedDefinition(definitions, cropName)
@@ -345,7 +346,8 @@ function GlobalMarketForces:getCropChannelTrendModifier(cropName, channelName, m
         if self:isTrendActive(trend, monthIndex) then
             local definition = self:getDefinitionForCropTrend(channelName, trend.trendType, cropName)
             if self:isCropTrendDefinitionRelevant(definition, cropName) then
-                local bias = (definition.cropBias and definition.cropBias[cropName]) or 1
+                local referenceCrop = self:getTrendReferenceCrop(cropName)
+                local bias = (definition.cropBias and (definition.cropBias[cropName] or definition.cropBias[referenceCrop])) or 1
                 modifier = modifier * (1 + (definition.baseImpact * trend.severity * self:getTrendRampFactor(trend, monthIndex) * bias * self:getCropChannelSensitivity(profile, channelName) * self:getCropChannelWeight(channelName)))
             end
         end
