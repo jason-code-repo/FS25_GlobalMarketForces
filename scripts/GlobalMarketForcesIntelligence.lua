@@ -25,7 +25,8 @@ function GlobalMarketForces:getCropDriverLabels(c,m)
  end
  for _,e in ipairs(self:getActiveEvents(m)) do
   local d=GlobalMarketForcesEvents.definitions[e.eventType]
-  local cropImpact=d and d.cropImpacts and d.cropImpacts[c]
+  local referenceCrop=self:getTrendReferenceCrop(c)
+  local cropImpact=d and d.cropImpacts and (d.cropImpacts[c] or d.cropImpacts[referenceCrop])
   if cropImpact ~= nil then addByImpact(d.displayName,cropImpact*(d.priceDirection or 1)) end
  end
  return drivers,risks
