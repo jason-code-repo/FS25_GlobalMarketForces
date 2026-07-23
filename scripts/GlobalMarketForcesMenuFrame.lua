@@ -3,6 +3,14 @@
 GlobalMarketForcesMenuFrame = {}
 local GlobalMarketForcesMenuFrame_mt = Class(GlobalMarketForcesMenuFrame, TabbedMenuFrameElement)
 
+local function text(key, fallback, ...)
+    return GlobalMarketForces:getText(key, fallback, ...)
+end
+
+local function labelKey(prefix, value)
+    return prefix .. string.lower(string.gsub(value or "", "[^%w]", ""))
+end
+
 function GlobalMarketForcesMenuFrame.new(target, customMt)
     local self = GlobalMarketForcesMenuFrame:superClass().new(target, customMt or GlobalMarketForcesMenuFrame_mt)
     self.name = "globalMarketForcesMenu"
@@ -28,7 +36,7 @@ function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends,
     local endMonth = activeTrend.startMonth + activeTrend.durationMonths
     local remainingMonths = endMonth - month
     if remainingMonths > 6 then
-        return "Analysts don't anticipate near term changes in the market."
+        return text("gmf_brief_noNearTermChange", "Analysts don't anticipate near term changes in the market.")
     end
 
     local nextTrend = nil
@@ -39,7 +47,7 @@ function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends,
     end
 
     if nextTrend == nil then
-        return "Analysts are awaiting a clearer outlook for the next market cycle."
+        return text("gmf_brief_awaitingOutlook", "Analysts are awaiting a clearer outlook for the next market cycle.")
     end
 
     if nextTrend.trendType == activeTrend.trendType then
@@ -59,9 +67,9 @@ function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends,
     end
     local direction = forecast.direction == "Upward" and 1 or forecast.direction == "Downward" and -1 or 0
     if direction > 0 then
-        return "Analysts are optimistic upcoming changes to the market are going to support crop prices."
+        return text("gmf_brief_optimistic", "Analysts are optimistic upcoming changes to the market are going to support crop prices.")
     elseif direction < 0 then
-        return "Analysts are afraid changes to the market are going to put further pressure on crop prices."
+        return text("gmf_brief_concerned", "Analysts are afraid changes to the market are going to put further pressure on crop prices.")
     end
     return nil
 end
@@ -73,18 +81,18 @@ function GlobalMarketForcesMenuFrame:updateGlobalConditions()
     local globalTrends = GlobalMarketForces:getActiveGlobalTrends(month)
     local events = GlobalMarketForces:getActiveEvents(month)
     local trendNarratives = {
-        bullMarket = "Commodity markets are in a broad upswing, generally supporting crop prices.",
-        bearMarket = "Commodity markets are in a broad downturn, generally weighing on crop prices.",
-        commoditySupercycle = "A long-term commodity boom is providing broad support for crop prices.",
-        globalRecession = "A global slowdown is reducing demand and putting broad pressure on prices.",
-        energyInflation = "Higher energy costs are adding broad support to commodity prices."
+        bullMarket = text("gmf_brief_bullMarket", "Commodity markets are in a broad upswing, generally supporting crop prices."),
+        bearMarket = text("gmf_brief_bearMarket", "Commodity markets are in a broad downturn, generally weighing on crop prices."),
+        commoditySupercycle = text("gmf_brief_commoditySupercycle", "A long-term commodity boom is providing broad support for crop prices."),
+        globalRecession = text("gmf_brief_globalRecession", "A global slowdown is reducing demand and putting broad pressure on prices."),
+        energyInflation = text("gmf_brief_energyInflation", "Higher energy costs are adding broad support to commodity prices.")
     }
     local eventNarratives = {
-        drought = "Dry conditions are tightening supplies.",
-        war = "Trade disruption is adding market risk.",
-        fuelSpike = "Higher fuel costs are raising production and transport costs.",
-        bumperHarvest = "Strong harvests are adding supply and softening prices.",
-        exportBoom = "Export demand is providing additional market support."
+        drought = text("gmf_brief_drought", "Dry conditions are tightening supplies."),
+        war = text("gmf_brief_war", "Trade disruption is adding market risk."),
+        fuelSpike = text("gmf_brief_fuelSpike", "Higher fuel costs are raising production and transport costs."),
+        bumperHarvest = text("gmf_brief_bumperHarvest", "Strong harvests are adding supply and softening prices."),
+        exportBoom = text("gmf_brief_exportBoom", "Export demand is providing additional market support.")
     }
     local globalStatements = {}
     local matchingConditions = {}
@@ -102,7 +110,7 @@ function GlobalMarketForcesMenuFrame:updateGlobalConditions()
     for _, event in ipairs(events) do
         local definition = GlobalMarketForcesEvents.definitions[event.eventType]
         local condition = {
-            text = eventNarratives[event.eventType] or "A broad world event is affecting market conditions.",
+            text = eventNarratives[event.eventType] or text("gmf_brief_genericEvent", "A broad world event is affecting market conditions."),
             direction = definition and (definition.priceDirection or 0) or 0
         }
         if globalDirection ~= 0 and condition.direction ~= 0 and condition.direction ~= globalDirection then
@@ -115,25 +123,37 @@ function GlobalMarketForcesMenuFrame:updateGlobalConditions()
     local analystOutlook = self:getGlobalTrendOutlookSentence(globalTrends, month)
 
     if #globalStatements == 0 and #matchingConditions == 0 and #mixedConditions == 0 then
-        local brief = "Broad market conditions are currently calm, with no major global drivers active."
+        local brief = text("gmf_brief_calm", "Broad market conditions are currently calm, with no major global drivers active.")
         if analystOutlook ~= nil then brief = brief .. " " .. analystOutlook end
-        self.globalConditions:setText("MARKET BRIEF: " .. brief)
+        self.globalConditions:setText(text("gmf_marketBriefPrefix", "MARKET BRIEF: ") .. brief)
     else
         local sentences = {}
         for _, statement in ipairs(globalStatements) do table.insert(sentences, statement.text) end
         for _, condition in ipairs(matchingConditions) do table.insert(sentences, condition.text) end
         for index, condition in ipairs(mixedConditions) do
             local text = condition.text
-            if index == 1 then text = "However, " .. string.lower(string.sub(text, 1, 1)) .. string.sub(text, 2) end
+            if index == 1 then text = GlobalMarketForces:getText("gmf_however", "However, ") .. string.lower(string.sub(text, 1, 1)) .. string.sub(text, 2) end
             table.insert(sentences, text)
         end
         if analystOutlook ~= nil then table.insert(sentences, analystOutlook) end
-        self.globalConditions:setText("MARKET BRIEF: " .. table.concat(sentences, " "))
+        self.globalConditions:setText(text("gmf_marketBriefPrefix", "MARKET BRIEF: ") .. table.concat(sentences, " "))
     end
 end
 
 function GlobalMarketForcesMenuFrame:onGuiSetupFinished()
     GlobalMarketForcesMenuFrame:superClass().onGuiSetupFinished(self)
+    self.menuTitle:setText(text("gmf_menuTitle", "Market Report"))
+    self.marketColumnHeader:setText(text("gmf_columnMarket", "Market"))
+    self.outlookColumnHeader:setText(text("gmf_columnOutlook", "Outlook"))
+    self.accuracyColumnHeader:setText(text("gmf_columnAccuracy", "Forecast Accuracy"))
+    self.momentumColumnHeader:setText(text("gmf_columnMomentum", "Momentum"))
+    self.marketTableInstruction:setText(text("gmf_selectMarket", "SELECT A MARKET FOR A DETAILED REPORT"))
+    self.backToMarketReport:setText(text("gmf_backToReport", "BACK TO MARKET REPORT"))
+    self.atAGlanceHeading:setText(text("gmf_headingAtAGlance", "AT A GLANCE"))
+    self.farmGuidanceHeading:setText(text("gmf_headingFarmGuidance", "FARM GUIDANCE"))
+    self.priceTimingHeading:setText(text("gmf_headingPriceTiming", "PRICE TIMING"))
+    self.marketSupportsHeading:setText(text("gmf_headingMarketSupports", "MARKET SUPPORTS"))
+    self.whatToWatchHeading:setText(text("gmf_headingWhatToWatch", "WHAT TO WATCH"))
     self.marketTable:setDataSource(self)
     self.marketTable:setDelegate(self)
     self.marketTable.onClickCallback = function()
@@ -160,17 +180,17 @@ function GlobalMarketForcesMenuFrame:showCropDetail(row)
     self.marketTableInstruction:setVisible(false)
     self.cropDetailPage:setVisible(true)
 
-    self.detailTitle:setText((row.displayName or row.fillTypeName) .. " Market Outlook")
+    self.detailTitle:setText(text("gmf_detailTitle", "%s Market Outlook", row.displayName or row.fillTypeName))
     if row.forecastDisabled then
-        self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Forecast accuracy is disabled for this savegame.")
+        self.detailOutlook:setText(text("gmf_detailDisabled", "Outlook: %s. Forecast accuracy is disabled for this savegame.", self:getLocalizedLabel("gmf_outlook_", row.farmerOutlook)))
     else
-        self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Selling conditions are " .. string.lower(row.marketCondition) .. ". Forecast confidence is " .. string.lower(row.forecastReliability) .. ".")
+        self.detailOutlook:setText(text("gmf_detailOutlook", "Outlook: %s. Selling conditions are %s. Forecast confidence is %s.", self:getLocalizedLabel("gmf_outlook_", row.farmerOutlook), string.lower(self:getLocalizedLabel("gmf_condition_", row.marketCondition)), string.lower(self:getLocalizedLabel("gmf_confidence_", row.forecastReliability))))
     end
     self.detailRecommendation:setText(self:getFarmGuidance(row))
     if row.forecastDisabled then
-        self.detailHorizons:setText("Forecasts are disabled for this savegame.")
+        self.detailHorizons:setText(text("gmf_forecastsDisabled", "Forecasts are disabled for this savegame."))
     else
-        self.detailHorizons:setText(GlobalMarketForces:getForecastSentence("Near term", row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Later this year", row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Long term", row.longTermDirection, row.longTermConfidence))
+        self.detailHorizons:setText(GlobalMarketForces:getForecastSentence(text("gmf_termNear", "Near term"), row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence(text("gmf_termLaterThisYear", "Later this year"), row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence(text("gmf_termLong", "Long term"), row.longTermDirection, row.longTermConfidence))
     end
     self.detailDrivers:setText(self:getReadableSupportSummary(row.drivers))
     self.detailRisks:setText(self:getReadableRiskSummary(row.risks))
@@ -244,6 +264,10 @@ function GlobalMarketForcesMenuFrame:onClickBackToMarketReport()
     self.marketTable:reloadData()
 end
 
+function GlobalMarketForcesMenuFrame:getLocalizedLabel(prefix, value)
+    return text(labelKey(prefix, value), value)
+end
+
 function GlobalMarketForcesMenuFrame:getNumberOfSections()
     return 1
 end
@@ -261,9 +285,9 @@ function GlobalMarketForcesMenuFrame:populateCellForItemInSection(list, section,
     if row == nil then return end
 
     cell:getAttribute("marketName"):setText(row.displayName or row.fillTypeName)
-    cell:getAttribute("marketOutlook"):setText(row.farmerOutlook)
-    cell:getAttribute("marketReliability"):setText(row.forecastReliability)
-    cell:getAttribute("marketMomentum"):setText(row.momentumLabel)
+    cell:getAttribute("marketOutlook"):setText(self:getLocalizedLabel("gmf_outlook_", row.farmerOutlook))
+    cell:getAttribute("marketReliability"):setText(self:getLocalizedLabel("gmf_confidence_", row.forecastReliability))
+    cell:getAttribute("marketMomentum"):setText(self:getLocalizedLabel("gmf_momentum_", row.momentumLabel))
 end
 
 -- Registers through the GUI screen controller. This is available during loadMap,

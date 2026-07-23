@@ -60,7 +60,9 @@ function GlobalMarketForcesSettings.initSettingsGui(frame)
 
         local option = frame.economicDifficulty:clone()
         option.texts = {}
-        for index, value in ipairs(GlobalMarketForcesSettings.SETTINGS) do option.texts[index] = value end
+        for index, value in ipairs(GlobalMarketForcesSettings.SETTINGS) do
+            option.texts[index] = GlobalMarketForcesSettings.getText("gmf_setting_" .. string.lower(value), value)
+        end
 
         frame.globalMarketForcesForecastAccuracy = option
         GlobalMarketForcesSettings.addOption(

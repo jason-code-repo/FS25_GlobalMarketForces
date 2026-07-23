@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="104">
+<modDesc descVersion="110">
   <author>Earshot</author>
-    <version>0.35.2.0</version>
-  <title><en>Global Market Forces</en></title>
-  <description><en><![CDATA[
-Global Market Forces adds crop-focused long-term pricing influenced by global cycles, crop demand, crop supply, crop policy, world events, and market intelligence.
-  ]]></en></description>
-  <iconFilename>icon.dds</iconFilename>
+  <version>1.0.0.0</version>
+  <title>
+    <en>Global Market Forces</en>
+    <de>Globale Marktkräfte</de>
+  </title>
+  <description>
+    <en><![CDATA[
+Global Market Forces adds a living crop economy to Farming Simulator 25. Crop prices respond to long-term global cycles, crop-specific demand and supply conditions, policy, world events, and market intelligence.
+]]></en>
+    <de><![CDATA[
+Globale Marktkräfte fügt Farming Simulator 25 eine lebendige Agrarwirtschaft hinzu. Die Erntepreise reagieren auf langfristige globale Zyklen, angebots- und nachfragespezifische Bedingungen, Politik, Weltereignisse und Marktinformationen.
+]]></de>
+  </description>
+  <iconFilename>icon_FS25_GlobalMarketForces.dds</iconFilename>
   <multiplayer supported="true" />
       <extraSourceFiles>
     <sourceFile filename="scripts/GlobalMarketForces.lua" />
@@ -33,18 +41,5 @@ Global Market Forces adds crop-focused long-term pricing influenced by global cy
       <binding device="KB_MOUSE_DEFAULT" input="KEY_lshift KEY_m" index="1" />
     </actionBinding>
   </inputBinding>
-  <l10n>
-    <text name="input_GMF_TOGGLE_REPORT">
-      <en>Global Market Forces: Toggle Market Report</en>
-    </text>
-    <text name="gmf_settings_header">
-      <en>GLOBAL MARKET FORCES</en>
-    </text>
-    <text name="gmf_forecast_accuracy">
-      <en>Forecast Accuracy</en>
-    </text>
-    <text name="gmf_forecast_accuracy_tooltip">
-      <en>Controls how reliable Market Report forecasts are in this savegame. Disabled hides forecast guidance; Perfect shows exact forecasts.</en>
-    </text>
-  </l10n>
+  <l10n filenamePrefix="l10n/l10n" />
 </modDesc>

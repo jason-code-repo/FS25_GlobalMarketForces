@@ -4,6 +4,14 @@ GlobalMarketForces.MOD_DIRECTORY=g_currentModDirectory or ""
 GlobalMarketForces.market={currentMonthIndex=1,maxMonths=60,basePricesCaptured=false,generated=false,randomSeed=nil}
 GlobalMarketForces.lastKnownPeriod=nil
 
+function GlobalMarketForces:getText(key, fallback, ...)
+    local environment = g_i18n ~= nil and g_i18n.modEnvironments ~= nil and g_i18n.modEnvironments[self.MOD_NAME] or nil
+    local text = environment ~= nil and environment.texts[key] or nil
+    text = text ~= nil and text ~= "" and text or fallback or key
+    if select("#", ...) > 0 then return string.format(text, ...) end
+    return text
+end
+
 function GlobalMarketForces:log(msg)
     if self:isLoggingEnabled() then
         print(string.format("[%s] %s",self.MOD_NAME,tostring(msg)))

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+  <texts>
+    <text name="input_GMF_TOGGLE_REPORT" text="Global Market Forces: Toggle Market Report"/>
+    <text name="gmf_settings_header" text="GLOBAL MARKET FORCES"/>
+    <text name="gmf_forecast_accuracy" text="Forecast Accuracy"/>
+    <text name="gmf_forecast_accuracy_tooltip" text="Controls how reliable Market Report forecasts are in this savegame. Disabled hides forecast guidance; Perfect shows exact forecasts."/>
+    <text name="gmf_setting_disabled" text="Disabled"/>
+    <text name="gmf_setting_low" text="Low"/>
+    <text name="gmf_setting_normal" text="Normal"/>
+    <text name="gmf_setting_high" text="High"/>
+    <text name="gmf_setting_perfect" text="Perfect"/>
+    <text name="gmf_menuTitle" text="Market Report"/>
+    <text name="gmf_columnMarket" text="Market"/>
+    <text name="gmf_columnOutlook" text="Outlook"/>
+    <text name="gmf_columnAccuracy" text="Forecast Accuracy"/>
+    <text name="gmf_columnMomentum" text="Momentum"/>
+    <text name="gmf_selectMarket" text="SELECT A MARKET FOR A DETAILED REPORT"/>
+    <text name="gmf_backToReport" text="BACK TO MARKET REPORT"/>
+    <text name="gmf_headingAtAGlance" text="AT A GLANCE"/>
+    <text name="gmf_headingFarmGuidance" text="FARM GUIDANCE"/>
+    <text name="gmf_headingPriceTiming" text="PRICE TIMING"/>
+    <text name="gmf_headingMarketSupports" text="MARKET SUPPORTS"/>
+    <text name="gmf_headingWhatToWatch" text="WHAT TO WATCH"/>
+    <text name="gmf_detailTitle" text="%s Market Outlook"/>
+    <text name="gmf_detailDisabled" text="Outlook: %s. Forecast accuracy is disabled for this savegame."/>
+    <text name="gmf_detailOutlook" text="Outlook: %s. Selling conditions are %s. Forecast confidence is %s."/>
+    <text name="gmf_forecastsDisabled" text="Forecasts are disabled for this savegame."/>
+    <text name="gmf_termNear" text="Near term"/>
+    <text name="gmf_termLaterThisYear" text="Later this year"/>
+    <text name="gmf_termLong" text="Long term"/>
+    <text name="gmf_forecastDisabledForTerm" text="%s: Forecasts are disabled for this savegame."/>
+    <text name="gmf_forecastExpected" text="%s: Prices are expected to %s."/>
+    <text name="gmf_forecastMay" text="%s: Prices may %s."/>
+    <text name="gmf_forecastUncertain" text="%s: The outlook is uncertain, though prices could %s."/>
+    <text name="gmf_brief_noNearTermChange" text="Analysts don't anticipate near term changes in the market."/>
+    <text name="gmf_brief_awaitingOutlook" text="Analysts are awaiting a clearer outlook for the next market cycle."/>
+    <text name="gmf_brief_optimistic" text="Analysts are optimistic upcoming changes to the market are going to support crop prices."/>
+    <text name="gmf_brief_concerned" text="Analysts are afraid changes to the market are going to put further pressure on crop prices."/>
+    <text name="gmf_marketBriefPrefix" text="MARKET BRIEF: "/>
+    <text name="gmf_however" text="However, "/>
+    <text name="gmf_brief_calm" text="Broad market conditions are currently calm, with no major global drivers active."/>
+    <text name="gmf_brief_genericEvent" text="A broad world event is affecting market conditions."/>
+    <text name="gmf_brief_bullMarket" text="Commodity markets are in a broad upswing, generally supporting crop prices."/>
+    <text name="gmf_brief_bearMarket" text="Commodity markets are in a broad downturn, generally weighing on crop prices."/>
+    <text name="gmf_brief_commoditySupercycle" text="A long-term commodity boom is providing broad support for crop prices."/>
+    <text name="gmf_brief_globalRecession" text="A global slowdown is reducing demand and putting broad pressure on prices."/>
+    <text name="gmf_brief_energyInflation" text="Higher energy costs are adding broad support to commodity prices."/>
+    <text name="gmf_brief_drought" text="Dry conditions are tightening supplies."/>
+    <text name="gmf_brief_war" text="Trade disruption is adding market risk."/>
+    <text name="gmf_brief_fuelSpike" text="Higher fuel costs are raising production and transport costs."/>
+    <text name="gmf_brief_bumperHarvest" text="Strong harvests are adding supply and softening prices."/>
+    <text name="gmf_brief_exportBoom" text="Export demand is providing additional market support."/>
+    <text name="gmf_outlook_excellent" text="Excellent"/>
+    <text name="gmf_outlook_good" text="Good"/>
+    <text name="gmf_outlook_average" text="Average"/>
+    <text name="gmf_outlook_poor" text="Poor"/>
+    <text name="gmf_outlook_avoid" text="Avoid"/>
+    <text name="gmf_confidence_disabled" text="Disabled"/>
+    <text name="gmf_confidence_veryhigh" text="Very High"/>
+    <text name="gmf_confidence_high" text="High"/>
+    <text name="gmf_confidence_medium" text="Medium"/>
+    <text name="gmf_confidence_low" text="Low"/>
+    <text name="gmf_confidence_verylow" text="Very Low"/>
+    <text name="gmf_condition_unknown" text="unknown"/>
+    <text name="gmf_condition_stable" text="Stable"/>
+    <text name="gmf_condition_mostlystable" text="Mostly Stable"/>
+    <text name="gmf_condition_mixed" text="Mixed"/>
+    <text name="gmf_condition_volatile" text="Volatile"/>
+    <text name="gmf_condition_highlyvolatile" text="Highly Volatile"/>
+    <text name="gmf_momentum_unavailable" text="Unavailable"/>
+    <text name="gmf_momentum_stronguptrend" text="Strong Uptrend"/>
+    <text name="gmf_momentum_uptrend" text="Uptrend"/>
+    <text name="gmf_momentum_stable" text="Stable"/>
+    <text name="gmf_momentum_downtrend" text="Downtrend"/>
+    <text name="gmf_momentum_strongdowntrend" text="Strong Downtrend"/>
+    <text name="gmf_trend_bullMarket" text="Global Commodity Bull Market"/>
+    <text name="gmf_trend_bearMarket" text="Global Commodity Bear Market"/>
+    <text name="gmf_trend_commoditySupercycle" text="Commodity Supercycle"/>
+    <text name="gmf_trend_globalRecession" text="Global Recession"/>
+    <text name="gmf_trend_energyInflation" text="Energy Inflation Cycle"/>
+    <text name="gmf_event_drought" text="Drought"/>
+    <text name="gmf_event_war" text="Conflict / Trade Disruption"/>
+    <text name="gmf_event_fuelSpike" text="Fuel Price Spike"/>
+    <text name="gmf_event_bumperHarvest" text="Bumper Harvest"/>
+    <text name="gmf_event_exportBoom" text="Export Demand Boom"/>
+  </texts>
+</l10n>

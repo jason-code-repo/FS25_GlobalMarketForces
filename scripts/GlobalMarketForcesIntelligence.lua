@@ -10,7 +10,7 @@ function GlobalMarketForces:getMomentumLabel(d) if d=="Strong Upward" then retur
 function GlobalMarketForces:getConfidenceLabelFromScore(s) if s>=90 then return "Very High" elseif s>=75 then return "High" elseif s>=55 then return "Medium" elseif s>=35 then return "Low" end return "Very Low" end
 function GlobalMarketForces:getMarketConditionLabelFromScore(s) if s>=85 then return "Stable" elseif s>=65 then return "Mostly Stable" elseif s>=45 then return "Mixed" elseif s>=25 then return "Volatile" end return "Highly Volatile" end
 function GlobalMarketForces:getAverageModifierForWindow(c,start,months) local last=start+months-1; local total,count=0,0; for m=start,last do total=total+self:calculateCropModifier(c,m); count=count+1 end; return count>0 and total/count or self:calculateCropModifier(c,start) end
-function GlobalMarketForces:getTrendDisplayName(t,cropName) local d=t.channel=="global" and GlobalMarketForcesTrends.globalDefinitions[t.trendType] or self:getDefinitionForCropTrend(t.channel,t.trendType,cropName); return d and d.displayName or t.trendType end
+function GlobalMarketForces:getTrendDisplayName(t,cropName) local d=t.channel=="global" and GlobalMarketForcesTrends.globalDefinitions[t.trendType] or self:getDefinitionForCropTrend(t.channel,t.trendType,cropName); return d and self:getText("gmf_trend_" .. t.trendType, d.displayName) or t.trendType end
 function GlobalMarketForces:getTrendBaseImpact(t,cropName) local d=t.channel=="global" and GlobalMarketForcesTrends.globalDefinitions[t.trendType] or self:getDefinitionForCropTrend(t.channel,t.trendType,cropName); return d and d.baseImpact or 0 end
 function GlobalMarketForces:getCropDriverLabels(c,m)
  local drivers,risks={},{}
@@ -27,7 +27,7 @@ function GlobalMarketForces:getCropDriverLabels(c,m)
   local d=GlobalMarketForcesEvents.definitions[e.eventType]
   local referenceCrop=self:getTrendReferenceCrop(c)
   local cropImpact=d and d.cropImpacts and (d.cropImpacts[c] or d.cropImpacts[referenceCrop])
-  if cropImpact ~= nil then addByImpact(d.displayName,cropImpact*(d.priceDirection or 1)) end
+  if cropImpact ~= nil then addByImpact(self:getText("gmf_event_" .. e.eventType, d.displayName),cropImpact*(d.priceDirection or 1)) end
  end
  return drivers,risks
 end
@@ -86,13 +86,13 @@ function GlobalMarketForces:getIssuedCropForecast(c,months,actualDirection)
 end
 
 function GlobalMarketForces:getForecastSentence(label,direction,confidence)
- if direction == nil then return label..": Forecasts are disabled for this savegame." end
+ if direction == nil then return self:getText("gmf_forecastDisabledForTerm", "%s: Forecasts are disabled for this savegame.", label) end
  local words={ ["Strong Upward"]="rise strongly", Upward="improve", Stable="remain broadly steady", Downward="weaken", ["Strong Downward"]="weaken sharply" }
  local movement=words[direction] or "remain uncertain"
- if confidence>=75 then return label..": Prices are expected to "..movement.."."
- elseif confidence>=55 then return label..": Prices may "..movement.."."
+ if confidence>=75 then return self:getText("gmf_forecastExpected", "%s: Prices are expected to %s.", label, movement)
+ elseif confidence>=55 then return self:getText("gmf_forecastMay", "%s: Prices may %s.", label, movement)
  end
- return label..": The outlook is uncertain, though prices could "..movement.."."
+ return self:getText("gmf_forecastUncertain", "%s: The outlook is uncertain, though prices could %s.", label, movement)
 end
 
 -- GMF stores market data by the stable fill-type name (for example
