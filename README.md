@@ -87,6 +87,26 @@ This file preserves the market month, scheduled global cycles, crop trends, worl
 - Economic difficulty is respected through each station's captured in-game base price.
 - Other mods that directly overwrite selling-station prices may conflict with GMF's managed crop prices.
 
+### Adding custom-crop mappings
+
+GMF automatically detects a custom crop when it is registered as a Farming Simulator fruit type and has a price at a selling station. Known crops can inherit a more appropriate market profile through:
+
+```text
+config/GlobalMarketForcesCustomCropMappings.xml
+```
+
+Add a mapping in this form:
+
+```xml
+<crop alias="winter barley" referenceCrop="BARLEY" profileGroup="grain"/>
+```
+
+- `alias` is the custom map's internal fill-type/fruit name. Matching is case-insensitive and ignores spaces, punctuation, and separators. For example, `Winter Barley`, `WINTERBARLEY`, and `winter-barley` all match the same alias, so include only one readable spelling in the XML.
+- `referenceCrop` must be an existing GMF crop key, such as `WHEAT`, `BARLEY`, `MAIZE`, `CANOLA`, `POTATO`, `GRAPE`, `HAY`, or `STRAW`. The custom crop inherits that crop's profile, seasonal curve, named trends, and world-event exposure.
+- `profileGroup` should match the reference crop's market group: `grain`, `vegetable`, `orchard`, `industrial`, or `forage`.
+
+If no alias is present, GMF uses a generic crop profile. It still participates in the market, but it does not inherit named crop-specific trends. At present, mappings are bundled with GMF; map-specific override files are planned for a future update.
+
 ## Development and Debugging
 
 When debug logging is enabled in the configuration, the game log records price comparisons in this form:
