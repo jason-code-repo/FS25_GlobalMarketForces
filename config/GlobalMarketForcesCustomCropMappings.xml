@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Global Market Forces custom crop compatibility mappings.
+
+    Aliases are case-insensitive and GMF removes spaces, punctuation, and
+    separators before matching. For example: Rye, RYE, and Rye; all match rye.
+    referenceCrop supplies the market profile, seasonal curve, named crop
+    trends, and world-event exposure for the detected custom fruit type.
+-->
+<customCropMappings>
+    <!-- Wheat-family cereals -->
+    <crop alias="rye" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="winter rye" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="spring rye" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="spelt" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="dinkel" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="triticale" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="durum" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="durum wheat" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="emmer" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="farro" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="einkorn" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="kamut" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="khorasan" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="buckwheat" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="winter wheat" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="spring wheat" referenceCrop="WHEAT" profileGroup="grain"/>
+    <crop alias="summer wheat" referenceCrop="WHEAT" profileGroup="grain"/>
+
+    <!-- Barley and oats -->
+    <crop alias="winter barley" referenceCrop="BARLEY" profileGroup="grain"/>
+    <crop alias="summer barley" referenceCrop="BARLEY" profileGroup="grain"/>
+    <crop alias="malt barley" referenceCrop="BARLEY" profileGroup="grain"/>
+    <crop alias="malting barley" referenceCrop="BARLEY" profileGroup="grain"/>
+    <crop alias="oats" referenceCrop="OAT" profileGroup="grain"/>
+
+    <!-- Maize, sorghum, and millet -->
+    <crop alias="corn" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="field corn" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="grain corn" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="grain maize" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="sweet corn" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="maize corn" referenceCrop="MAIZE" profileGroup="grain"/>
+    <crop alias="milo" referenceCrop="SORGHUM" profileGroup="grain"/>
+    <crop alias="millet" referenceCrop="SORGHUM" profileGroup="grain"/>
+    <crop alias="proso millet" referenceCrop="SORGHUM" profileGroup="grain"/>
+    <crop alias="foxtail millet" referenceCrop="SORGHUM" profileGroup="grain"/>
+
+    <!-- Oilseeds and legumes -->
+    <crop alias="soy" referenceCrop="SOYBEAN" profileGroup="grain"/>
+    <crop alias="soybeans" referenceCrop="SOYBEAN" profileGroup="grain"/>
+    <crop alias="edamame" referenceCrop="SOYBEAN" profileGroup="grain"/>
+    <crop alias="rapeseed" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="oilseed rape" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="colza" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="mustard" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="mustard seed" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="flax" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="linseed" referenceCrop="CANOLA" profileGroup="grain"/>
+    <crop alias="sunflowers" referenceCrop="SUNFLOWER" profileGroup="grain"/>
+
+    <!-- Rice -->
+    <crop alias="paddy" referenceCrop="RICE" profileGroup="grain"/>
+    <crop alias="paddy rice" referenceCrop="RICE" profileGroup="grain"/>
+    <crop alias="short grain rice" referenceCrop="RICE" profileGroup="grain"/>
+    <crop alias="brown rice" referenceCrop="LONGGRAINRICE" profileGroup="grain"/>
+    <crop alias="long grain rice" referenceCrop="LONGGRAINRICE" profileGroup="grain"/>
+
+    <!-- Field vegetables -->
+    <crop alias="potatoes" referenceCrop="POTATO" profileGroup="vegetable"/>
+    <crop alias="sweet potato" referenceCrop="POTATO" profileGroup="vegetable"/>
+    <crop alias="sweet potatoes" referenceCrop="POTATO" profileGroup="vegetable"/>
+    <crop alias="yam" referenceCrop="POTATO" profileGroup="vegetable"/>
+    <crop alias="yams" referenceCrop="POTATO" profileGroup="vegetable"/>
+    <crop alias="carrots" referenceCrop="CARROT" profileGroup="vegetable"/>
+    <crop alias="parsnips" referenceCrop="PARSNIP" profileGroup="vegetable"/>
+    <crop alias="beet" referenceCrop="REDBEET" profileGroup="vegetable"/>
+    <crop alias="beets" referenceCrop="REDBEET" profileGroup="vegetable"/>
+    <crop alias="beetroot" referenceCrop="REDBEET" profileGroup="vegetable"/>
+    <crop alias="green beans" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="string bean" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="string beans" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="snap bean" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="snap beans" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="runner bean" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="runner beans" referenceCrop="GREENBEAN" profileGroup="vegetable"/>
+    <crop alias="peas" referenceCrop="PEA" profileGroup="vegetable"/>
+    <crop alias="spinach" referenceCrop="SPINACH" profileGroup="vegetable"/>
+    <crop alias="onions" referenceCrop="ONION" profileGroup="vegetable"/>
+    <crop alias="sugar beets" referenceCrop="SUGARBEET" profileGroup="vegetable"/>
+
+    <!-- Orchard crops -->
+    <crop alias="grapes" referenceCrop="GRAPE" profileGroup="orchard"/>
+    <crop alias="vitis" referenceCrop="GRAPE" profileGroup="orchard"/>
+    <crop alias="olives" referenceCrop="OLIVE" profileGroup="orchard"/>
+
+    <!-- Fibre and forage -->
+    <crop alias="cottons" referenceCrop="COTTON" profileGroup="industrial"/>
+    <crop alias="alfalfa" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="lucerne" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="clover" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="red clover" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="white clover" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="timothy" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="fescue" referenceCrop="GRASS" profileGroup="forage"/>
+    <crop alias="bermuda grass" referenceCrop="GRASS" profileGroup="forage"/>
+    <crop alias="meadow grass" referenceCrop="GRASS" profileGroup="forage"/>
+    <crop alias="grass hay" referenceCrop="HAY" profileGroup="forage"/>
+    <crop alias="wheat straw" referenceCrop="STRAW" profileGroup="forage"/>
+    <crop alias="barley straw" referenceCrop="STRAW" profileGroup="forage"/>
+    <crop alias="oat straw" referenceCrop="STRAW" profileGroup="forage"/>
+    <crop alias="corn stalk" referenceCrop="STRAW" profileGroup="forage"/>
+    <crop alias="corn stalks" referenceCrop="STRAW" profileGroup="forage"/>
+</customCropMappings>

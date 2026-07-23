@@ -12,10 +12,12 @@ end
 
 function GlobalMarketForces:loadMap()
     self.market.maxMonths=GlobalMarketForcesConfig.maxMonths or 60
+    self:loadCustomCropAliases()
     self:installSellingStationPriceOverride()
     self:loadMarketState()
+    self:registerDetectedCustomCropProfiles()
     self:registerReportActionEvents()
-    if not self.market.basePricesCaptured then self:captureBasePrices() end
+    self:captureBasePrices()
     if not self.market.generated then
         self:generateLongTermTrends()
         self:generateInitialWorldEvents()
@@ -30,6 +32,7 @@ end
 function GlobalMarketForces:deleteMap() end
 function GlobalMarketForces:update(dt)
     self:checkMonthChange()
+    self:updateCustomCropDiscovery(dt)
     if self.priceMenuRefreshPending then
         self.priceMenuRefreshPending = false
         self:refreshOpenPricesMenu()

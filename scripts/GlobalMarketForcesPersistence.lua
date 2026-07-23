@@ -249,6 +249,7 @@ end
 if Mission00 ~= nil then
     Mission00.loadItemsFinished = Utils.appendedFunction(Mission00.loadItemsFinished, function()
         GlobalMarketForces:loadMarketStateFromSavegame()
+        GlobalMarketForces:activateDetectedCustomCropProfiles()
     end)
 end
 

@@ -7,9 +7,9 @@ function GlobalMarketForces:getFillTypeIndex(cropName)
 end
 
 function GlobalMarketForces:captureBasePrices()
-    self.basePrices = {}
+    self.basePrices = self.basePrices or {}
     for cropName, _ in pairs(GlobalMarketForcesConfig.cropProfiles) do
-        self.basePrices[cropName] = self:getCurrentFillTypePrice(cropName) or 1
+        if self.basePrices[cropName] == nil then self.basePrices[cropName] = self:getCurrentFillTypePrice(cropName) or 1 end
     end
     self.market.basePricesCaptured = true
 end
@@ -131,13 +131,14 @@ function GlobalMarketForces:captureSellingStationBasePrices()
     self.sellingStationBaseEffectivePrices = self.sellingStationBaseEffectivePrices or {}
     local capturedStations = 0
     for _, station in pairs(self:getAllSellingStations()) do
-        if station.isSellingPoint == true and station.fillTypePrices ~= nil and self.sellingStationBasePrices[station] == nil then
-            local basePrices = {}
-            local baseEffectivePrices = {}
+        if station.isSellingPoint == true and station.fillTypePrices ~= nil then
+            local isNewStation = self.sellingStationBasePrices[station] == nil
+            local basePrices = self.sellingStationBasePrices[station] or {}
+            local baseEffectivePrices = self.sellingStationBaseEffectivePrices[station] or {}
             for cropName, _ in pairs(GlobalMarketForcesConfig.marketProfiles) do
                 local fillTypeIndex = self:getFillTypeIndex(cropName)
                 local stationPrice = fillTypeIndex and station.fillTypePrices[fillTypeIndex] or nil
-                if stationPrice ~= nil then
+                if stationPrice ~= nil and basePrices[cropName] == nil then
                     basePrices[cropName] = stationPrice
                     -- Capture the game's difficulty-adjusted, station-specific
                     -- effective price once. GMF owns future movement from this
@@ -148,7 +149,7 @@ function GlobalMarketForces:captureSellingStationBasePrices()
             end
             self.sellingStationBasePrices[station] = basePrices
             self.sellingStationBaseEffectivePrices[station] = baseEffectivePrices
-            capturedStations = capturedStations + 1
+            if isNewStation then capturedStations = capturedStations + 1 end
         end
     end
 

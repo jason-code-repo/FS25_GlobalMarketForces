@@ -92,6 +92,25 @@ GlobalMarketForcesConfig.mergeProfileGroup(GlobalMarketForcesConfig.cropProfiles
 -- marketProfiles is the runtime lookup used by the price engine and market intelligence.
 GlobalMarketForcesConfig.marketProfiles = GlobalMarketForcesConfig.cropProfiles
 
+-- Custom crop aliases are loaded from
+-- config/GlobalMarketForcesCustomCropMappings.xml during map loading. This
+-- keeps map-compatibility data separate from the market simulation code.
+GlobalMarketForcesConfig.customCropAliases = {}
+
+-- A map-registered fruit type without a known alias is intentionally given a
+-- modest, broad profile. Non-fruit commodities remain unmanaged unless a
+-- future explicit profile opt-in adds them.
+GlobalMarketForcesConfig.genericCustomCropProfile = {
+  volatility=0.045,
+  seasonalWeight=1.00,
+  globalTrendSensitivity=0.90,
+  demandSensitivity=1.00,
+  supplySensitivity=1.00,
+  policySensitivity=0.85,
+  profileGroup="grain",
+  marketType="crop"
+}
+
 GlobalMarketForcesConfig.seasonalCurves = {
  WHEAT={1.08,1.06,1.03,1.00,0.96,0.92,0.88,0.91,0.96,1.02,1.07,1.10}, BARLEY={1.06,1.05,1.02,1.00,0.97,0.93,0.90,0.92,0.97,1.01,1.05,1.08}, OAT={1.05,1.04,1.02,1.00,0.98,0.95,0.92,0.94,0.98,1.01,1.04,1.06}, MAIZE={1.10,1.08,1.05,1.01,0.98,0.94,0.90,0.88,0.93,1.00,1.06,1.11}, SOYBEAN={1.09,1.07,1.04,1.01,0.97,0.93,0.90,0.92,0.97,1.03,1.08,1.12}, CANOLA={1.07,1.05,1.03,1.00,0.97,0.94,0.91,0.93,0.98,1.02,1.06,1.09}, SUNFLOWER={1.08,1.06,1.03,1.00,0.96,0.93,0.91,0.94,0.99,1.03,1.07,1.10}, SORGHUM={1.06,1.04,1.02,1.00,0.97,0.94,0.91,0.93,0.97,1.01,1.05,1.07},
  POTATO={1.04,1.03,1.01,0.99,0.96,0.94,0.95,0.98,1.02,1.05,1.07,1.06}, SUGARBEET={1.03,1.02,1.00,0.98,0.96,0.95,0.96,0.99,1.03,1.06,1.07,1.05}, COTTON={1.08,1.06,1.04,1.01,0.98,0.95,0.93,0.95,1.00,1.06,1.10,1.11}, RICE={1.07,1.05,1.03,1.00,0.96,0.93,0.92,0.96,1.02,1.07,1.09,1.08}, LONGGRAINRICE={1.08,1.06,1.03,1.00,0.96,0.93,0.92,0.97,1.03,1.08,1.10,1.09},
