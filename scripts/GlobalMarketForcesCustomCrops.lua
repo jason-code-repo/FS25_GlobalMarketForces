@@ -156,8 +156,8 @@ function GlobalMarketForces:registerDetectedCustomCropProfiles(reportDiagnostics
         end
     end
 
-    if reportDiagnostics and (unknownFruitCount > 0 or registeredCount > 0) then
-        print(string.format(
+    if reportDiagnostics and GlobalMarketForcesConfig.debug and (unknownFruitCount > 0 or registeredCount > 0) then
+        self:log(string.format(
             "[%s] Custom crop scan: %d unprofiled fruit type(s), %d sellable, %d registered, %d already managed",
             self.MOD_NAME,
             unknownFruitCount,
@@ -166,7 +166,7 @@ function GlobalMarketForces:registerDetectedCustomCropProfiles(reportDiagnostics
             alreadyManagedCount
         ))
         if #skippedNames > 0 then
-            print(string.format(
+            self:log(string.format(
                 "[%s] Custom crop scan skipped fruit type(s) without a detected selling-station price: %s",
                 self.MOD_NAME,
                 table.concat(skippedNames, ", ")
@@ -185,7 +185,7 @@ function GlobalMarketForces:applyNewCustomCropProfiles(registeredCount, source)
     self:ensureLongTermTrendHorizon()
     self:ensureWorldEventHorizon()
     self:applyCropPrices()
-    print(string.format("[%s] Registered %d custom crop market profile(s) %s", self.MOD_NAME, registeredCount, source))
+    self:log(string.format("Registered %d custom crop market profile(s) %s", registeredCount, source))
 end
 
 -- loadMap can run before a custom map has registered all of its selling
