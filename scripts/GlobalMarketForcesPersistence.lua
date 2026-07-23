@@ -1,8 +1,42 @@
 -- Savegame persistence for the generated five-year market timeline.
+-- GMF owns this deterministic random sequence so new saves receive distinct
+-- markets without reseeding Lua's shared random generator used by the game or
+-- other mods. The current state is persisted for deterministic extensions.
+function GlobalMarketForces:createMarketRandomSeed()
+    local savegameDirectory = g_currentMission and g_currentMission.missionInfo and g_currentMission.missionInfo.savegameDirectory or ""
+    -- The GIANTS Lua sandbox does not expose the standard os library. Use values
+    -- that are available while a map is loading instead of os.time/os.clock.
+    local missionTime = g_currentMission and g_currentMission.time or 0
+    local missionStartTime = g_currentMission and g_currentMission.missionInfo and g_currentMission.missionInfo.startTime or 0
+    local runtimeSeconds = type(getTimeSec) == "function" and getTimeSec() or 0
+    -- tostring({}) contains the new Lua table's identity, giving separately
+    -- created saves distinct entropy even when they use the same save slot.
+    local entropy = tostring(savegameDirectory) .. ":" .. tostring(missionTime) .. ":" .. tostring(missionStartTime) .. ":" .. tostring(g_time or 0) .. ":" .. tostring(runtimeSeconds) .. ":" .. tostring({})
+    local seed = 17
+    for index = 1, #entropy do seed = (seed * 31 + string.byte(entropy, index)) % 2147483647 end
+    return math.max(1, seed)
+end
+
+function GlobalMarketForces:ensureMarketRandomState()
+    self.market = self.market or {}
+    if self.market.randomSeed == nil or self.market.randomSeed < 1 then self.market.randomSeed = self:createMarketRandomSeed() end
+    if self.market.randomState == nil or self.market.randomState < 1 then self.market.randomState = self.market.randomSeed end
+end
+
+function GlobalMarketForces:getMarketRandomFloat()
+    self:ensureMarketRandomState()
+    self.market.randomState = (self.market.randomState * 48271) % 2147483647
+    return self.market.randomState / 2147483647
+end
+
+function GlobalMarketForces:getMarketRandomInteger(minimum, maximum)
+    return minimum + math.floor(self:getMarketRandomFloat() * (maximum - minimum + 1))
+end
+
 function GlobalMarketForces:loadMarketState()
     self.market = self.market or {}
     self.market.currentMonthIndex = self.market.currentMonthIndex or 1
-    self.market.randomSeed = self.market.randomSeed or math.random(100000, 999999999)
+    self:ensureMarketRandomState()
     self.generatedEvents = self.generatedEvents or {}
     self.globalTrends = self.globalTrends or {}
     self.cropTrends = self.cropTrends or {}
@@ -54,6 +88,7 @@ function GlobalMarketForces:readMarketStateFromXML(xmlFile, key)
     self.market.basePricesCaptured = xmlFile:getBool(stateKey .. "#basePricesCaptured") or false
     self.market.generated = xmlFile:getBool(stateKey .. "#generated") or false
     self.market.randomSeed = xmlFile:getInt(stateKey .. "#randomSeed")
+    self.market.randomState = xmlFile:getInt(stateKey .. "#randomState")
     self.market.eventsGeneratedThroughYear = xmlFile:getInt(stateKey .. "#eventsGeneratedThroughYear") or GlobalMarketForcesConfig.maxYears or 5
     self.market.cropForecasts = {}
     local forecastIndex = 0
@@ -106,6 +141,7 @@ function GlobalMarketForces:readMarketStateFromXML(xmlFile, key)
         if cropName ~= "" then self.basePrices[cropName] = xmlFile:getFloat(priceKey .. "#value") or 1 end
         priceIndex = priceIndex + 1
     end
+    self:ensureMarketRandomState()
 end
 
 function GlobalMarketForces:writeMarketStateToXML(xmlFile, key)
@@ -116,6 +152,7 @@ function GlobalMarketForces:writeMarketStateToXML(xmlFile, key)
     xmlFile:setBool(stateKey .. "#basePricesCaptured", market.basePricesCaptured == true)
     xmlFile:setBool(stateKey .. "#generated", market.generated == true)
     if market.randomSeed ~= nil then xmlFile:setInt(stateKey .. "#randomSeed", market.randomSeed) end
+    if market.randomState ~= nil then xmlFile:setInt(stateKey .. "#randomState", market.randomState) end
     xmlFile:setInt(stateKey .. "#eventsGeneratedThroughYear", market.eventsGeneratedThroughYear or 0)
 
     local forecastIndex = 0
