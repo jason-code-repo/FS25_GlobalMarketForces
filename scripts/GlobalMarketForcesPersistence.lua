@@ -8,6 +8,8 @@ function GlobalMarketForces:loadMarketState()
     self.cropTrends = self.cropTrends or {}
     self.basePrices = self.basePrices or {}
     self.cropPriceHistory = self.cropPriceHistory or {}
+    self.market.cropForecasts = self.market.cropForecasts or {}
+    self.market.globalCycleForecasts = self.market.globalCycleForecasts or {}
 end
 
 function GlobalMarketForces:saveMarketState()
@@ -53,6 +55,22 @@ function GlobalMarketForces:readMarketStateFromXML(xmlFile, key)
     self.market.generated = xmlFile:getBool(stateKey .. "#generated") or false
     self.market.randomSeed = xmlFile:getInt(stateKey .. "#randomSeed")
     self.market.eventsGeneratedThroughYear = xmlFile:getInt(stateKey .. "#eventsGeneratedThroughYear") or GlobalMarketForcesConfig.maxYears or 5
+    self.market.cropForecasts = {}
+    local forecastIndex = 0
+    while xmlFile:hasProperty(stateKey .. ".cropForecast(" .. forecastIndex .. ")") do
+        local forecastKey = stateKey .. ".cropForecast(" .. forecastIndex .. ")"
+        local forecastName = xmlFile:getString(forecastKey .. "#key")
+        if forecastName ~= nil then self.market.cropForecasts[forecastName] = { issueMonth=xmlFile:getInt(forecastKey .. "#issueMonth") or 0, months=xmlFile:getInt(forecastKey .. "#months") or 0, confidence=xmlFile:getFloat(forecastKey .. "#confidence") or 0, direction=xmlFile:getString(forecastKey .. "#direction") or "Stable", version=xmlFile:getInt(forecastKey .. "#version") or 0 } end
+        forecastIndex = forecastIndex + 1
+    end
+    self.market.globalCycleForecasts = {}
+    local globalForecastIndex = 0
+    while xmlFile:hasProperty(stateKey .. ".globalCycleForecast(" .. globalForecastIndex .. ")") do
+        local forecastKey = stateKey .. ".globalCycleForecast(" .. globalForecastIndex .. ")"
+        local endMonth = xmlFile:getInt(forecastKey .. "#endMonth")
+        if endMonth ~= nil then self.market.globalCycleForecasts[endMonth] = { issueMonth=xmlFile:getInt(forecastKey .. "#issueMonth") or 0, direction=xmlFile:getString(forecastKey .. "#direction") or "Stable", confidence=xmlFile:getFloat(forecastKey .. "#confidence") or 0 } end
+        globalForecastIndex = globalForecastIndex + 1
+    end
 
     self.globalTrends = readTrendList(xmlFile, stateKey .. ".globalTrend")
     self.generatedEvents = readTrendList(xmlFile, stateKey .. ".event")
@@ -99,6 +117,19 @@ function GlobalMarketForces:writeMarketStateToXML(xmlFile, key)
     xmlFile:setBool(stateKey .. "#generated", market.generated == true)
     if market.randomSeed ~= nil then xmlFile:setInt(stateKey .. "#randomSeed", market.randomSeed) end
     xmlFile:setInt(stateKey .. "#eventsGeneratedThroughYear", market.eventsGeneratedThroughYear or 0)
+
+    local forecastIndex = 0
+    for forecastName, forecast in pairs(market.cropForecasts or {}) do
+        local forecastKey = stateKey .. ".cropForecast(" .. forecastIndex .. ")"
+        xmlFile:setString(forecastKey .. "#key", forecastName); xmlFile:setInt(forecastKey .. "#issueMonth", forecast.issueMonth or 0); xmlFile:setInt(forecastKey .. "#months", forecast.months or 0); xmlFile:setFloat(forecastKey .. "#confidence", forecast.confidence or 0); xmlFile:setString(forecastKey .. "#direction", forecast.direction or "Stable"); xmlFile:setInt(forecastKey .. "#version", forecast.version or 0)
+        forecastIndex = forecastIndex + 1
+    end
+    local globalForecastIndex = 0
+    for endMonth, forecast in pairs(market.globalCycleForecasts or {}) do
+        local forecastKey = stateKey .. ".globalCycleForecast(" .. globalForecastIndex .. ")"
+        xmlFile:setInt(forecastKey .. "#endMonth", endMonth); xmlFile:setInt(forecastKey .. "#issueMonth", forecast.issueMonth or 0); xmlFile:setString(forecastKey .. "#direction", forecast.direction or "Stable"); xmlFile:setFloat(forecastKey .. "#confidence", forecast.confidence or 0)
+        globalForecastIndex = globalForecastIndex + 1
+    end
 
     writeTrendList(xmlFile, stateKey .. ".globalTrend", self.globalTrends)
 

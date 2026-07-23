@@ -46,7 +46,17 @@ function GlobalMarketForcesMenuFrame:getGlobalTrendOutlookSentence(globalTrends,
     end
 
     local definition = GlobalMarketForcesTrends.globalDefinitions[nextTrend.trendType]
-    local direction = definition and definition.baseImpact or 0
+    local actualDirection = definition and definition.baseImpact or 0
+    local confidence = remainingMonths <= 2 and 78 or 65
+    GlobalMarketForces.market.globalCycleForecasts = GlobalMarketForces.market.globalCycleForecasts or {}
+    local forecast = GlobalMarketForces.market.globalCycleForecasts[endMonth]
+    if forecast == nil or forecast.issueMonth ~= month then
+        local predictedDirection = GlobalMarketForces:getForecastDirection(actualDirection > 0 and "Upward" or "Downward", confidence, "global:" .. endMonth .. ":" .. month)
+        forecast = { issueMonth = month, direction = predictedDirection, confidence = confidence }
+        GlobalMarketForces.market.globalCycleForecasts[endMonth] = forecast
+        GlobalMarketForces:saveMarketState()
+    end
+    local direction = forecast.direction == "Upward" and 1 or forecast.direction == "Downward" and -1 or 0
     if direction > 0 then
         return "Analysts are optimistic upcoming changes to the market are going to support crop prices."
     elseif direction < 0 then
@@ -136,6 +146,7 @@ function GlobalMarketForcesMenuFrame:showMarketTable()
     self.marketTableHeader:setVisible(true)
     self.marketTable:setVisible(true)
     self.marketListSlider:setVisible(true)
+    self.marketTableInstruction:setVisible(true)
     self.cropDetailPage:setVisible(false)
 end
 
@@ -145,12 +156,13 @@ function GlobalMarketForcesMenuFrame:showCropDetail(row)
     self.marketTableHeader:setVisible(false)
     self.marketTable:setVisible(false)
     self.marketListSlider:setVisible(false)
+    self.marketTableInstruction:setVisible(false)
     self.cropDetailPage:setVisible(true)
 
     self.detailTitle:setText(string.upper(row.fillTypeName) .. " MARKET OUTLOOK")
     self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Selling conditions are " .. string.lower(row.marketCondition) .. ". Forecast confidence is " .. string.lower(row.forecastReliability) .. ".")
     self.detailRecommendation:setText(self:getFarmGuidance(row))
-    self.detailHorizons:setText("Near term: " .. row.shortTermDirection .. ". Later this year: " .. row.mediumTermDirection .. ". Long term: " .. row.longTermDirection .. ".")
+    self.detailHorizons:setText(GlobalMarketForces:getForecastSentence("Near term", row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Later this year", row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Long term", row.longTermDirection, row.longTermConfidence))
     self.detailDrivers:setText(self:getReadableSupportSummary(row.drivers))
     self.detailRisks:setText(self:getReadableRiskSummary(row.risks))
 end
@@ -321,7 +333,11 @@ function GlobalMarketForces:registerMenuPage()
     inGameMenu.pagingElement:updateAbsolutePosition()
     inGameMenu.pagingElement:updatePageMapping()
     inGameMenu:registerPage(self.menuFrame, position, nil)
-    inGameMenu:addPageTab(self.menuFrame, self.MOD_DIRECTORY .. "icon.dds", GuiUtils.getUVs({0, 0, 256, 256}))
+    -- The mod-card artwork is too detailed for the narrow in-game tab strip.
+    -- Use a dedicated transparent glyph for a clean, legible Market Report tab.
+    -- Page-tab UVs use the engine's 1024-unit icon space. A 256-unit
+    -- rectangle only selects a corner of the texture on this control.
+    inGameMenu:addPageTab(self.menuFrame, self.MOD_DIRECTORY .. "gui/marketReportIcon.dds", GuiUtils.getUVs({0, 0, 1024, 1024}))
 
     for i, child in ipairs(inGameMenu.pageFrames) do
         if child == self.menuFrame then
