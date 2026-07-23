@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<GUIProfiles>
+    <Profile name="gmfMenuTitle" extends="fs25_textDefault">
+        <size value="600px 64px"/>
+        <position value="100px 10px"/>
+        <textSize value="42px"/>
+        <textUpperCase value="true"/>
+    </Profile>
+    <Profile name="gmfMenuColumnHeader" extends="baseReference">
+        <imageColor value="0 0 0 0"/>
+        <textSize value="16px"/>
+        <textBold value="true"/>
+        <textUpperCase value="true"/>
+        <textColor value="$preset_colorWhite_50"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="gmfMenuColumnHeaderRight" extends="gmfMenuColumnHeader" with="anchorStretchingYRight">
+        <textAlignment value="right"/>
+    </Profile>
+    <Profile name="gmfGlobalConditions" extends="gmfMenuColumnHeader">
+        <textColor value="$preset_colorWhite"/>
+        <textUpperCase value="false"/>
+    </Profile>
+    <Profile name="gmfMarketList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+        <position value="0px -126px"/>
+    </Profile>
+    <Profile name="gmfMarketListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+        <height value="32px"/>
+        <imageColor value="$preset_fs25_colorGrey"/>
+        <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50"/>
+    </Profile>
+    <Profile name="gmfMenuCell" extends="baseReference" with="anchorStretchingYLeft">
+        <textSize value="16px"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="gmfMenuCellLeft" extends="gmfMenuCell" with="anchorStretchingYLeft"/>
+    <Profile name="gmfMenuCellRight" extends="gmfMenuCell" with="anchorStretchingYRight">
+        <textAlignment value="right"/>
+    </Profile>
+    <Profile name="gmfMarketListSlider" extends="fs25_listSliderBox" with="anchorTopRight">
+        <position value="28px -126px"/>
+        <size value="6px 520px"/>
+    </Profile>
+    <Profile name="gmfDetailTitle" extends="baseReference" with="anchorTopStretchingX">
+        <imageColor value="0 0 0 0"/>
+        <textColor value="$preset_colorWhite"/>
+        <textSize value="28px"/>
+        <textUpperCase value="true"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="gmfDetailLine" extends="baseReference" with="anchorTopStretchingX">
+        <imageColor value="0 0 0 0"/>
+        <textColor value="$preset_colorWhite"/>
+        <textSize value="16px"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="gmfDetailSection" extends="gmfDetailLine">
+        <textColor value="$preset_fs25_colorMainLight"/>
+        <textSize value="14px"/>
+        <textBold value="true"/>
+        <textUpperCase value="true"/>
+    </Profile>
+    <Profile name="gmfMenuIcon" extends="baseReference" with="anchorMiddleCenter">
+        <size value="50px 50px"/>
+        <imageSliceId value="gui.icon_ingameMenu_prices"/>
+        <imageColor value="$preset_fs25_colorMainDark"/>
+    </Profile>
+</GUIProfiles>
