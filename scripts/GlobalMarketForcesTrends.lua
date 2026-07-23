@@ -170,9 +170,19 @@ function GlobalMarketForces:normalizeTrendDurationMonths(definition, remainingMo
     return duration
 end
 
-function GlobalMarketForces:pickWeightedDefinition(definitions)
+-- A cropBias table means that this is a named, crop-targeted trend. Trends
+-- without one are intentionally broad and apply to the whole profile group.
+function GlobalMarketForces:isCropTrendDefinitionRelevant(definition, cropName)
+    return definition ~= nil and (definition.cropBias == nil or definition.cropBias[cropName] ~= nil)
+end
+
+function GlobalMarketForces:pickWeightedDefinition(definitions, cropName)
     local keys = {}
-    for key, _ in pairs(definitions) do table.insert(keys, key) end
+    for key, definition in pairs(definitions) do
+        if cropName == nil or self:isCropTrendDefinitionRelevant(definition, cropName) then
+            table.insert(keys, key)
+        end
+    end
     if #keys == 0 then return nil, nil end
     local selectedKey = keys[self:getMarketRandomInteger(1, #keys)]
     return selectedKey, definitions[selectedKey]
@@ -194,7 +204,7 @@ function GlobalMarketForces:generateCropChannelTrendTimeline(cropName, channelNa
     local month = 1
     while month <= self.market.maxMonths do
         local remaining = self.market.maxMonths - month + 1
-        local trendType, definition = self:pickWeightedDefinition(definitions)
+        local trendType, definition = self:pickWeightedDefinition(definitions, cropName)
         if trendType == nil then return end
         local duration = self:normalizeTrendDurationMonths(definition, remaining)
         table.insert(self.cropTrends[cropName][channelName], { channel = channelName, trendType = trendType, startMonth = month, durationMonths = duration, severity = self:getMarketRandomInteger(45, 100) / 100 })
@@ -234,7 +244,7 @@ function GlobalMarketForces:extendCropChannelTrendTimeline(cropName, channelName
     self.cropTrends[cropName][channelName] = entries
     local nextStartMonth = self:getTimelineNextStartMonth(entries, self.market.currentMonthIndex or 1)
     while nextStartMonth <= targetMonth do
-        local trendType, definition = self:pickWeightedDefinition(definitions)
+        local trendType, definition = self:pickWeightedDefinition(definitions, cropName)
         if trendType == nil then return end
         local duration = self:getTrendDurationMonths(definition)
         table.insert(entries, { channel = channelName, trendType = trendType, startMonth = nextStartMonth, durationMonths = duration, severity = self:getMarketRandomInteger(45, 100) / 100 })
@@ -334,7 +344,7 @@ function GlobalMarketForces:getCropChannelTrendModifier(cropName, channelName, m
     for _, trend in ipairs((((self.cropTrends or {})[cropName] or {})[channelName] or {})) do
         if self:isTrendActive(trend, monthIndex) then
             local definition = self:getDefinitionForCropTrend(channelName, trend.trendType, cropName)
-            if definition then
+            if self:isCropTrendDefinitionRelevant(definition, cropName) then
                 local bias = (definition.cropBias and definition.cropBias[cropName]) or 1
                 modifier = modifier * (1 + (definition.baseImpact * trend.severity * self:getTrendRampFactor(trend, monthIndex) * bias * self:getCropChannelSensitivity(profile, channelName) * self:getCropChannelWeight(channelName)))
             end
@@ -355,7 +365,12 @@ end
 
 function GlobalMarketForces:getActiveCropChannelTrends(cropName, channelName, monthIndex)
     local active = {}
-    for _, trend in ipairs((((self.cropTrends or {})[cropName] or {})[channelName] or {})) do if self:isTrendActive(trend, monthIndex) then table.insert(active, trend) end end
+    for _, trend in ipairs((((self.cropTrends or {})[cropName] or {})[channelName] or {})) do
+        local definition = self:getDefinitionForCropTrend(channelName, trend.trendType, cropName)
+        if self:isTrendActive(trend, monthIndex) and self:isCropTrendDefinitionRelevant(definition, cropName) then
+            table.insert(active, trend)
+        end
+    end
     return active
 end
 
