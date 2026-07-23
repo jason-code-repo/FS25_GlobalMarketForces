@@ -48,7 +48,7 @@ function GlobalMarketForces:draw()
     setTextColor(1, 1, 1, 1)
     for _, row in ipairs(rows) do
         if y < 0.05 then break end
-        renderText(x, y, textSize, string.format("%-16s %-9s %-11s %-13s %s", row.fillTypeName, row.marketType, row.farmerOutlook, row.forecastReliability, row.momentumLabel))
+        renderText(x, y, textSize, string.format("%-16s %-9s %-11s %-13s %s", row.displayName or row.fillTypeName, row.marketType, row.farmerOutlook, row.forecastReliability, row.momentumLabel))
         y = y - lineHeight
     end
 

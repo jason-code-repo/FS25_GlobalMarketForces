@@ -84,6 +84,19 @@ function GlobalMarketForces:getForecastSentence(label,direction,confidence)
  return label..": The outlook is uncertain, though prices could "..movement.."."
 end
 
+-- GMF stores market data by the stable fill-type name (for example
+-- "LONGGRAINRICE"), while the game exposes a localized player-facing title
+-- for the same fill type. Keep the title separate so reports use the same
+-- naming convention as the base-game Prices page without affecting saved GMF
+-- data.
+function GlobalMarketForces:getFillTypeReportInfo(fillTypeName)
+ local fillTypeIndex = self:getFillTypeIndex(fillTypeName)
+ local fillType = fillTypeIndex ~= nil and g_fillTypeManager ~= nil and g_fillTypeManager:getFillTypeByIndex(fillTypeIndex) or nil
+ local displayName = fillType ~= nil and fillType.title or nil
+ if displayName == nil or displayName == "" then displayName = fillTypeName end
+ return displayName
+end
+
 function GlobalMarketForces:getCropMarketIntelligence(c)
  local cur=self.market.currentMonthIndex or 1; local cm=self:calculateCropModifier(c,cur)
  local st,mt,lt=GlobalMarketForcesConfig.marketIntelligence.shortTermMonths,GlobalMarketForcesConfig.marketIntelligence.mediumTermMonths,GlobalMarketForcesConfig.marketIntelligence.longTermMonths
@@ -91,7 +104,12 @@ function GlobalMarketForces:getCropMarketIntelligence(c)
  local mediumForecast=self:getIssuedCropForecast(c,mt,self:getDirectionFromDelta(self:getAverageModifierForWindow(c,cur,mt)-cm))
  local longForecast=self:getIssuedCropForecast(c,lt,self:getDirectionFromDelta(self:getAverageModifierForWindow(c,cur,lt)-cm))
  local rating=self:getAnalystRatingFromModifier(cm); local out=self:getFarmerOutlookFromRating(rating); local drivers,risks=self:getCropDriverLabels(c,cur); local marketType=(GlobalMarketForcesConfig.marketProfiles[c] or {}).marketType or "crop"
- return {fillTypeName=c,marketType=marketType,currentModifier=cm,analystRating=rating,farmerOutlook=out,farmerRecommendation=self:getFarmerRecommendationFromOutlook(out),momentumLabel=self:getMomentumLabel(shortForecast.direction),shortTermDirection=shortForecast.direction,mediumTermDirection=mediumForecast.direction,longTermDirection=longForecast.direction,shortTermConfidence=shortForecast.confidence,mediumTermConfidence=mediumForecast.confidence,longTermConfidence=longForecast.confidence,forecastReliability=self:getConfidenceLabelFromScore(shortForecast.confidence),marketCondition=self:getMarketConditionLabelFromScore(shortForecast.confidence),drivers=drivers,risks=risks}
+ local displayName = self:getFillTypeReportInfo(c)
+ return {fillTypeName=c,displayName=displayName,marketType=marketType,currentModifier=cm,analystRating=rating,farmerOutlook=out,farmerRecommendation=self:getFarmerRecommendationFromOutlook(out),momentumLabel=self:getMomentumLabel(shortForecast.direction),shortTermDirection=shortForecast.direction,mediumTermDirection=mediumForecast.direction,longTermDirection=longForecast.direction,shortTermConfidence=shortForecast.confidence,mediumTermConfidence=mediumForecast.confidence,longTermConfidence=longForecast.confidence,forecastReliability=self:getConfidenceLabelFromScore(shortForecast.confidence),marketCondition=self:getMarketConditionLabelFromScore(shortForecast.confidence),drivers=drivers,risks=risks}
 end
-function GlobalMarketForces:getMarketIntelligenceSnapshot() local rows={}; for c,_ in pairs(GlobalMarketForcesConfig.marketProfiles) do table.insert(rows,self:getCropMarketIntelligence(c)) end; local rank={Excellent=5,Good=4,Average=3,Poor=2,Avoid=1}; table.sort(rows,function(a,b) return (rank[a.farmerOutlook] or 0)>(rank[b.farmerOutlook] or 0) end); return rows end
+function GlobalMarketForces:isReportableMarketCrop(cropName)
+ local fillTypeIndex = self:getFillTypeIndex(cropName)
+ return fillTypeIndex ~= nil and self:isRegisteredFruitType(cropName) and self:isSellableFillType(fillTypeIndex)
+end
+function GlobalMarketForces:getMarketIntelligenceSnapshot() local rows={}; for c,_ in pairs(GlobalMarketForcesConfig.marketProfiles) do if self:isReportableMarketCrop(c) then table.insert(rows,self:getCropMarketIntelligence(c)) end end; local rank={Excellent=5,Good=4,Average=3,Poor=2,Avoid=1}; table.sort(rows,function(a,b) return (rank[a.farmerOutlook] or 0)>(rank[b.farmerOutlook] or 0) end); return rows end
 function GlobalMarketForces:joinLabels(t,empty) if not t or #t==0 then return empty or "none" end; local s=""; for i,v in ipairs(t) do if i>1 then s=s..", " end; s=s..v end; return s end

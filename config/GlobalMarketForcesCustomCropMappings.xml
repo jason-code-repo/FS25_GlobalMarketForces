@@ -65,6 +65,7 @@
     <crop alias="short grain rice" referenceCrop="RICE" profileGroup="grain"/>
     <crop alias="brown rice" referenceCrop="LONGGRAINRICE" profileGroup="grain"/>
     <crop alias="long grain rice" referenceCrop="LONGGRAINRICE" profileGroup="grain"/>
+    <crop alias="rice long grain" referenceCrop="LONGGRAINRICE" profileGroup="grain"/>
 
     <!-- Field vegetables -->
     <crop alias="potatoes" referenceCrop="POTATO" profileGroup="vegetable"/>

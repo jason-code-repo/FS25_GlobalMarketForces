@@ -159,7 +159,7 @@ function GlobalMarketForcesMenuFrame:showCropDetail(row)
     self.marketTableInstruction:setVisible(false)
     self.cropDetailPage:setVisible(true)
 
-    self.detailTitle:setText(string.upper(row.fillTypeName) .. " MARKET OUTLOOK")
+    self.detailTitle:setText((row.displayName or row.fillTypeName) .. " Market Outlook")
     self.detailOutlook:setText("Outlook: " .. row.farmerOutlook .. ". Selling conditions are " .. string.lower(row.marketCondition) .. ". Forecast confidence is " .. string.lower(row.forecastReliability) .. ".")
     self.detailRecommendation:setText(self:getFarmGuidance(row))
     self.detailHorizons:setText(GlobalMarketForces:getForecastSentence("Near term", row.shortTermDirection, row.shortTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Later this year", row.mediumTermDirection, row.mediumTermConfidence) .. "\n" .. GlobalMarketForces:getForecastSentence("Long term", row.longTermDirection, row.longTermConfidence))
@@ -250,7 +250,7 @@ function GlobalMarketForcesMenuFrame:populateCellForItemInSection(list, section,
     local row = self.marketRows[index]
     if row == nil then return end
 
-    cell:getAttribute("marketName"):setText(row.fillTypeName)
+    cell:getAttribute("marketName"):setText(row.displayName or row.fillTypeName)
     cell:getAttribute("marketOutlook"):setText(row.farmerOutlook)
     cell:getAttribute("marketReliability"):setText(row.forecastReliability)
     cell:getAttribute("marketMomentum"):setText(row.momentumLabel)

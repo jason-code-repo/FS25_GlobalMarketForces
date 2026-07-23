@@ -31,7 +31,7 @@
             <Button profile="fs25_subCategorySelectorTabbedTab" text="BACK TO MARKET REPORT" onClick="onClickBackToMarketReport" position="20px 0px" size="320px 40px">
                 <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
             </Button>
-            <Text profile="gmfDetailTitle" id="detailTitle" text="CROP MARKET OUTLOOK" position="20px -70px" size="1450px 40px"/>
+            <Text profile="gmfDetailTitle" id="detailTitle" text="Crop Market Outlook" position="20px -70px" size="1450px 40px"/>
             <Text profile="gmfDetailSection" text="AT A GLANCE" position="20px -130px" size="1450px 24px"/>
             <Text profile="gmfDetailLine" id="detailOutlook" text="Loading..." position="20px -158px" size="1450px 28px"/>
             <Text profile="gmfDetailSection" text="FARM GUIDANCE" position="20px -220px" size="1450px 24px"/>
